@@ -25,7 +25,7 @@
         },
         {
             "id" : "type4A",
-            "name" : "4灯式A",
+            "name" : "4灯式警戒",
             "lightsize" : 4,
             "lights" : [
                 "FFFF00","FF0000","006600","FFFF00"
@@ -50,7 +50,7 @@
         },
         {
             "id" : "type4B",
-            "name" : "4灯式B",
+            "name" : "4灯式減速",
             "lightsize" : 4,
             "lights" : [
                 "FFFF00","FF0000","FFFF00","006600"
@@ -72,6 +72,34 @@
                     false,false,false,true
                 ]
             }
+        },
+                {
+            "id" : "type4C",
+            "name" : "4灯式減速フリッカー",
+            "lightsize" : 4,
+            "lights" : [
+                "FFFF00","FF0000","FFFF00","006600"
+            ],
+            "speedlimit" : [
+                0,45,75,-1
+            ],
+            "lightpattern" : {
+                "patternA" : [
+                    false,true,false,false
+                ],
+                "patternB" : [
+                    false,false,true,false
+                ],
+                "patternC" : [
+                    true,false,false,true
+                ],
+                "patternD" : [
+                    false,false,false,true
+                ]
+            },
+            "lightflicker" : [
+                false,false,true,false
+            ]
         }
     ]
 }
