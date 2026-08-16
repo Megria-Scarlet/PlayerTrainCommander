@@ -48,7 +48,7 @@
             "speedlimit" : 45,
             "joins" : {
                 "joinupids" : ["stationA-Form1","stationA-Form2"],
-                "joindownids" : ["TrackA"]
+                "joindownids" : ["trackDown1"]
             }
         },
         {
@@ -58,26 +58,26 @@
             "speedlimit" : 45,
             "joins" : {
                 "joinupids" : ["stationA-Form3","stationA-Form4"],
-                "joindownids" : ["TrackB"]
+                "joindownids" : ["trackUp1"]
             }
         },
         {
-            "trackid" : "trackA",
-            "tracktype" : "Normal",
-            "length" : 300,
-            "speedlimit" : 120,
-            "joins" : {
-                "joinupids" : ["stationA-Point1"],
-                "joindownids" : []
-            }
-        },
-        {
-            "trackid" : "trackB",
+            "trackid" : "trackUp1",
             "tracktype" : "Normal",
             "length" : 300,
             "speedlimit" : 120,
             "joins" : {
                 "joinupids" : ["stationA-Point2"],
+                "joindownids" : []
+            }
+        },
+        {
+            "trackid" : "trackDown1",
+            "tracktype" : "Normal",
+            "length" : 300,
+            "speedlimit" : 120,
+            "joins" : {
+                "joinupids" : ["stationA-Point1"],
                 "joindownids" : []
             }
         }
