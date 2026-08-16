@@ -15,6 +15,12 @@
             </summary>
             <returns>管理に使用する固有の文字列。</returns>
         </member>
+        <member name="M:PTC.Core.Loader.StationFile.GetStationList">
+            <summary>
+            <see cref="T:PTC.Core.Station"/> 型のオブジェクトを取得します。
+            </summary>
+            <returns>読み取られた <see cref="T:PTC.Core.Station"/> 型のオブジェクト。</returns>
+        </member>
         <member name="M:PTC.Core.Loader.StationFile.FromJson(System.IO.Stream,System.Text.Json.JsonSerializerOptions)">
             <summary>
             json ファイルのストリームからデータを読み取り、 <see cref="T:PTC.Core.Loader.StationFile"/> 型のオブジェクトを取得します。

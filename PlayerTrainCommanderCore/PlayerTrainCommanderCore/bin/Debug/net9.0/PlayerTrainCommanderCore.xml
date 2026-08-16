@@ -15,6 +15,14 @@
             </summary>
             <returns>管理に使用する固有の文字列。</returns>
         </member>
+        <member name="M:PTC.Core.Loader.StationFile.FromJson(System.IO.Stream,System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            json ファイルのストリームからデータを読み取り、 <see cref="T:PTC.Core.Loader.StationFile"/> 型のオブジェクトを取得します。
+            </summary>
+            <param name="utf8Json">json ファイルのストリーム。</param>
+            <returns>json ファイルから読み取られた <see cref="T:PTC.Core.Loader.StationFile"/> 型のオブジェクト。</returns>
+            <param name="options">デシリアライズに使用するオプション。</param>
+        </member>
         <member name="T:PTC.Core.StationJsonConverter">
             <summary>
             <see cref="T:PTC.Core.Station"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。

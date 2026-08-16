@@ -12,14 +12,32 @@ namespace PTC.Core.Loader
     [JsonConverter(typeof(StationFileJsonConverter))]
     public class StationFile
     {
-        public string version;
+        private string version;
 
-        public Station[] stationlist;
+        private Station[] stationlist;
 
         public StationFile(string version, Station[] stations)
         {
             this.version = version;
             this.stationlist = stations;
+        }
+        /// <summary>
+        /// <see cref="Station"/> 型のオブジェクトを取得します。
+        /// </summary>
+        /// <returns>読み取られた <see cref="Station"/> 型のオブジェクト。</returns>
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<Station> GetStationList() => stationlist;
+
+        /// <summary>
+        /// json ファイルのストリームからデータを読み取り、 <see cref="StationFile"/> 型のオブジェクトを取得します。
+        /// </summary>
+        /// <param name="utf8Json">json ファイルのストリーム。</param>
+        /// <returns>json ファイルから読み取られた <see cref="StationFile"/> 型のオブジェクト。</returns>
+        /// <param name="options">デシリアライズに使用するオプション。</param>
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public static StationFile? FromJson(Stream utf8Json, JsonSerializerOptions? options = null)
+        {
+            return JsonSerializer.Deserialize<StationFile>(utf8Json, options);
         }
     }
 
