@@ -74,7 +74,7 @@
             }
         },
                 {
-            "id" : "type4B",
+            "id" : "type4C",
             "name" : "4灯式減速フリッカー",
             "lightsize" : 4,
             "lights" : [
