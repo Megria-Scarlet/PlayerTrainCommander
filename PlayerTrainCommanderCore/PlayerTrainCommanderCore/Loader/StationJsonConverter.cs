@@ -32,6 +32,8 @@ namespace PTC.Core
                             {
                                 reader.Read();
                                 id = reader.GetString();
+                                if (id is null)
+                                    throw new JsonException("ID を null に設定することはできません。");
                             }
                             else if (reader.ValueTextEquals(nameof(name)))
                             {
@@ -73,8 +75,7 @@ namespace PTC.Core
                     if (id is not null)
                         return new Station(id, name, shortname, capacity);
                     else
-                        return new Station("ぬるぽ", name, shortname, capacity);
-                    //throw new FormatException("Station:id が取得できなかったお。");
+                        throw new JsonException("プロパティ \"id\" が見つかりませんでした。");
                 }
             }
             return null;

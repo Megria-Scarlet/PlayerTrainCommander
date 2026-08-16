@@ -52,7 +52,13 @@ namespace View
                     }
                     {
                         using System.IO.FileStream fileStream = stationFile.OpenRead();
-                        var obj = PTC.Core.Loader.StationFile.FromJson(fileStream);
+
+                        JsonSerializerOptions serializerOptions = new JsonSerializerOptions();
+                        serializerOptions.Converters.Add(new PTC.Core.StationJsonConverter());
+                        serializerOptions.Converters.Add(new PTC.Core.Loader.StationFileJsonConverter());
+                        serializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All);
+
+                        var obj = PTC.Core.Loader.StationFile.FromJson(fileStream, serializerOptions);
                         _ = obj;
                     }
 
