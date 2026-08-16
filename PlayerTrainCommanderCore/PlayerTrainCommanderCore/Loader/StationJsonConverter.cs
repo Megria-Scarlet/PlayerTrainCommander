@@ -72,7 +72,8 @@ namespace PTC.Core
 
                     if (id is not null)
                         return new Station(id, name, shortname, capacity);
-
+                    else
+                        throw new FormatException("Station:id が取得できなかったお。");
                 }
             }
             return null;

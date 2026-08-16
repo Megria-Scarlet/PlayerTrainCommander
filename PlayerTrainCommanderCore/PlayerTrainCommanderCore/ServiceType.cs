@@ -11,7 +11,7 @@ namespace PTC.Core
     /// <summary>
     /// 列車種別を管理するクラス。
     /// </summary>
-#if !NETSTANDARD2_0
+#if true
     [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 #else
     [DebuggerDisplay("{{GetDebuggerDisplay(),nq}}")]
@@ -35,7 +35,7 @@ namespace PTC.Core
             this.id = id;
             this.name = name ?? abbreviation;
             this.abbreviation = abbreviation;
-#if !NETSTANDARD2_0
+#if true
             this.stopStations = [.. stopStations];
 #else
             this.stopStations = stopStations.ToArray();

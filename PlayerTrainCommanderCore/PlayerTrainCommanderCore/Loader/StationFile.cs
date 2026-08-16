@@ -89,7 +89,7 @@ namespace PTC.Core.Loader
                         }
                     }
                     if (ver is not null)
-#if !NETSTANDARD2_0
+#if true
                         return new StationFile(ver, [.. stations]);
 #else
                         return new StationFile(ver, [.. stations]);

@@ -13,7 +13,7 @@ namespace PTC.Core
     /// 駅情報を管理するクラス。
     /// </summary>
     [JsonConverter(typeof(StationJsonConverter))]
-#if !NETSTANDARD2_0
+#if true
     [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 #else
     [DebuggerDisplay("{{GetDebuggerDisplay(),nq}}")]
