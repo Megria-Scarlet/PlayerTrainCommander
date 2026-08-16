@@ -15,6 +15,11 @@
             </summary>
             <returns>管理に使用する固有の文字列。</returns>
         </member>
+        <member name="T:PTC.Core.StationJsonConverter">
+            <summary>
+            <see cref="T:PTC.Core.Station"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
+            </summary>
+        </member>
         <member name="T:PTC.Core.ServiceType">
             <summary>
             列車種別を管理するクラス。
@@ -58,18 +63,38 @@
             駅情報を管理するクラス。
             </summary>
         </member>
-        <member name="M:PTC.Core.Station.#ctor(System.String,System.String)">
+        <member name="M:PTC.Core.Station.#ctor(System.String,System.String,System.String,System.UInt32)">
             <summary>
             固有の ID と表示名を指定して、新しい <see cref="T:PTC.Core.Station"/> 型のオブジェクトを作成します。
             </summary>
             <param name="id">固有の ID 。</param>
             <param name="name">識別に使用する任意の文字列。</param>
+            <param name="abbreviation">識別に使用する任意の省略文字列。</param>
+            <param name="capacity">許容乗客数。</param>
         </member>
         <member name="P:PTC.Core.Station.Id">
             <summary>
             管理に使用する固有の文字列を取得します。
             </summary>
             <returns>管理に使用する固有の文字列。</returns>
+        </member>
+        <member name="P:PTC.Core.Station.Name">
+            <summary>
+            識別に使用する文字列を取得します。
+            </summary>
+            <returns>識別に使用する固有の文字列。</returns>
+        </member>
+        <member name="P:PTC.Core.Station.Abbreviation">
+            <summary>
+            識別に使用する省略文字列を取得します。
+            </summary>
+            <returns>識別に使用する固有の省略文字列。</returns>
+        </member>
+        <member name="P:PTC.Core.Station.Capacity">
+            <summary>
+            許容乗客数を取得します。
+            </summary>
+            <returns>許容乗客数を表す 32 ビット符号なし整数。</returns>
         </member>
     </members>
 </doc>

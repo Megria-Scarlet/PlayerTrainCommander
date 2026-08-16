@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -30,11 +32,43 @@ namespace View
             if (openFileDialog.ShowDialog() == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok)
             {
                 string path = openFileDialog.FileName;
-                if (System.IO.Directory.Exists(path))
+                System.IO.DirectoryInfo directoryInfo = new(path);
+                if (directoryInfo.Exists)
                 {
-                    foreach (string p in System.IO.Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories))
+                    var list = directoryInfo.GetDirectories().ToList();
+                    var staitonInfo = list.FirstOrDefault(x => x.Name.Equals("station", StringComparison.InvariantCultureIgnoreCase));
+                    if (staitonInfo is null)
+                    {
+                        string msg = "staiton フォルダーがありません。";
+                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    var stationFile = staitonInfo.EnumerateFiles().FirstOrDefault(x => x.Name.Equals("station.json", StringComparison.InvariantCultureIgnoreCase));
+                    if (stationFile is null)
+                    {
+                        string msg = "staiton ファイルがありません。";
+                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    {
+                        using System.IO.FileStream fileStream = stationFile.OpenRead();
+                        JsonSerializerOptions serializerOptions = new();
+                        serializerOptions.Converters.Add(new PTC.Core.StationJsonConverter());
+                        var obj = JsonSerializer.Deserialize<PTC.Core.Loader.StationFile>(fileStream, serializerOptions);
+                        _ = obj;
+                    }
+
+                    var serviceTypeInfo = directoryInfo.EnumerateDirectories().FirstOrDefault(x => x.Name.Equals("ServiceType", StringComparison.InvariantCultureIgnoreCase));
+                    if (serviceTypeInfo is not null)
                     {
 
+                    }
+
+
+
+                    foreach (string p in System.IO.Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories))
+                    {
+                        Debug.WriteLine(p);
                     }
                 }
             }
