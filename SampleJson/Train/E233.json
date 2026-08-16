@@ -4,11 +4,11 @@
     "name": "E233",
     "cars" : 10,
     "seat" : {
-        "Seating" : 54,
-        "Standing" : 200
+        "seating" : 54,
+        "standing" : 200
     },
     "performance" : {
-        "Acceleration" : 3.5,
-        "Deceleration" : 3.5
+        "acceleration" : 3.5,
+        "deceleration" : 3.5
     }
 }
