@@ -12,15 +12,66 @@ namespace PTC.Core
         {
             if (typeof(Station).IsAssignableFrom(typeToConvert))
             {
-                string? id = null;
-                int startDepth = reader.CurrentDepth;
-                while (reader.Read())
+                if (reader.TokenType == JsonTokenType.StartObject)
                 {
-                    if (reader.TokenType == JsonTokenType.EndObject)
+                    string? id = null;
+                    string? name = null;
+                    string? shortname = null;
+                    string? stationabbreviation = null;
+                    uint capacity = 0;
+                    uint demand = 0;
+
+
+                    int startDepth = reader.CurrentDepth;
+                    while (reader.Read())
                     {
-                        if (reader.CurrentDepth == startDepth)
-                            break;
+                        if (reader.TokenType == JsonTokenType.PropertyName)
+                        {
+                            if (reader.ValueTextEquals(nameof(id)))
+                            {
+                                reader.Read();
+                                id = reader.GetString();
+                            }
+                            else if (reader.ValueTextEquals(nameof(name)))
+                            {
+                                reader.Read();
+                                name = reader.GetString();
+                            }
+                            else if (reader.ValueTextEquals(nameof(shortname)))
+                            {
+                                reader.Read();
+                                shortname = reader.GetString();
+                            }
+                            else if (reader.ValueTextEquals(nameof(stationabbreviation)))
+                            {
+                                reader.Read();
+                                stationabbreviation = reader.GetString();
+                            }
+                            else if (reader.ValueTextEquals(nameof(capacity)))
+                            {
+                                reader.Read();
+                                capacity = reader.GetUInt32();
+                            }
+                            else if (reader.ValueTextEquals(nameof(demand)))
+                            {
+                                reader.Read();
+                                demand = reader.GetUInt32();
+                            }
+                            else
+                            {
+                                reader.Skip();
+                            }
+                        }
+                        else if (reader.TokenType == JsonTokenType.EndObject)
+                        {
+                            if (reader.CurrentDepth <= startDepth)
+                                break;
+                        }
                     }
+
+                    if (id is not null)
+                        return new Station(id, name, shortname, capacity);
+
                 }
             }
             return null;

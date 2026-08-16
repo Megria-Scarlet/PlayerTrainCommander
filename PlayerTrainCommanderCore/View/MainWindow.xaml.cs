@@ -52,9 +52,7 @@ namespace View
                     }
                     {
                         using System.IO.FileStream fileStream = stationFile.OpenRead();
-                        JsonSerializerOptions serializerOptions = new();
-                        serializerOptions.Converters.Add(new PTC.Core.StationJsonConverter());
-                        var obj = JsonSerializer.Deserialize<PTC.Core.Loader.StationFile>(fileStream, serializerOptions);
+                        var obj = JsonSerializer.Deserialize<PTC.Core.Loader.StationFile>(fileStream);
                         _ = obj;
                     }
 

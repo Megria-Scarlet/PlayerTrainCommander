@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,6 +11,7 @@ namespace PTC.Core
     /// <summary>
     /// 列車種別を管理するクラス。
     /// </summary>
+    [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
     public class ServiceType
     {
         private string id;
@@ -67,6 +69,11 @@ namespace PTC.Core
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.stopStations;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string GetDebuggerDisplay()
+        {
+            return name ?? ToString()!;
         }
     }
 }

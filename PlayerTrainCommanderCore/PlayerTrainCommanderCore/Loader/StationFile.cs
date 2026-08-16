@@ -33,6 +33,7 @@ namespace PTC.Core.Loader
                 {
                     string? ver = null;
                     int startDepth = reader.CurrentDepth;
+                    List<Station> stations = new List<Station>();
 
                     while (reader.Read())
                     {
@@ -48,8 +49,26 @@ namespace PTC.Core.Loader
                                 reader.Read();
                                 ver = reader.GetString();
                             }
+                            else if (reader.ValueTextEquals("stationlist"))
+                            {
+                                reader.Read();
+                                if (reader.TokenType == JsonTokenType.StartArray)
+                                {
+                                    reader.Read();
+                                    do
+                                    {
+                                        Station? station = JsonSerializer.Deserialize<Station>(ref reader, options);
+                                        if (station is not null)
+                                            stations.Add(station);
+                                        reader.Read();
+                                    }
+                                    while (reader.TokenType != JsonTokenType.EndArray);
+                                }
+                            }
                         }
                     }
+                    if (ver is not null)
+                        return new StationFile(ver, [.. stations]);
 
                     _ = ver;
                 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -12,6 +13,7 @@ namespace PTC.Core
     /// 駅情報を管理するクラス。
     /// </summary>
     [JsonConverter(typeof(StationJsonConverter))]
+    [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
     public class Station : IInherentObject
     {
         private string id;
@@ -71,6 +73,11 @@ namespace PTC.Core
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.capacity;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string GetDebuggerDisplay()
+        {
+            return name ?? ToString()!;
         }
     }
 }
