@@ -7,10 +7,8 @@
             "length" : 250,
             "speedlimit" : 100,
             "joins" : {
-                "joinleftids" : [],
-                "joinrightids" : ["stationA-Point1"],
-                "joinupperids" : [],
-                "joinlowerids" : []
+                "joinupids" : [],
+                "joindownids" : ["stationA-Point1"]
             }
         },
         {
@@ -19,10 +17,8 @@
             "length" : 250,
             "speedlimit" : 100,
             "joins" : {
-                "joinleftids" : [],
-                "joinrightids" : ["stationA-Point1"],
-                "joinupperids" : [],
-                "joinlowerids" : []
+                "joinupids" : [],
+                "joindownids" : ["stationA-Point1"]
             }
         },
         {
@@ -31,10 +27,8 @@
             "length" : 250,
             "speedlimit" : 100,
             "joins" : {
-                "joinleftids" : [],
-                "joinrightids" : ["stationA-Point2"],
-                "joinupperids" : [],
-                "joinlowerids" : []
+                "joinupids" : [],
+                "joindownids" : ["stationA-Point2"]
             }
         },
         {
@@ -43,10 +37,8 @@
             "length" : 250,
             "speedlimit" : 100,
             "joins" : {
-                "joinleftids" : [],
-                "joinrightids" : [],
-                "joinupperids" : ["stationA-Point2"],
-                "joinlowerids" : []
+                "joinupids" : [],
+                "joindownids" : []
             }
         },
         {
@@ -55,10 +47,8 @@
             "length" : 100,
             "speedlimit" : 45,
             "joins" : {
-                "joinleftids" : ["stationA-Form1","stationA-Form2"],
-                "joinrightids" : ["TrackA"],
-                "joinupperids" : [],
-                "joinlowerids" : []
+                "joinupids" : ["stationA-Form1","stationA-Form2"],
+                "joindownids" : ["TrackA"]
             }
         },
         {
@@ -67,34 +57,28 @@
             "length" : 100,
             "speedlimit" : 45,
             "joins" : {
-                "joinleftids" : ["stationA-Form3","stationA-Form4"],
-                "joinrightids" : ["TrackB"],
-                "joinupperids" : [],
-                "joinlowerids" : []
+                "joinupids" : ["stationA-Form3","stationA-Form4"],
+                "joindownids" : ["TrackB"]
             }
         },
         {
             "trackid" : "trackA",
             "tracktype" : "Normal",
-            "length" : 2000,
+            "length" : 300,
             "speedlimit" : 120,
             "joins" : {
-                "joinleftids" : ["stationA-Point1"],
-                "joinrightids" : [],
-                "joinupperids" : [],
-                "joinlowerids" : []
+                "joinupids" : ["stationA-Point1"],
+                "joindownids" : []
             }
         },
         {
             "trackid" : "trackB",
             "tracktype" : "Normal",
-            "length" : 2000,
+            "length" : 300,
             "speedlimit" : 120,
             "joins" : {
-                "joinleftids" : ["stationA-Point2"],
-                "joinrightids" : [],
-                "joinupperids" : [],
-                "joinlowerids" : []
+                "joinupids" : ["stationA-Point2"],
+                "joindownids" : []
             }
         }
     ]

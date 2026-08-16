@@ -2,6 +2,7 @@
     "version" : "1.0.0",
     "id": "E233-10",
     "name": "E233",
+    "totallength" : 200,
     "cars" : 10,
     "seat" : {
         "seating" : 54,
