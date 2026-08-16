@@ -1,113 +1,36 @@
 {
-    "Format" : "ServiceType",
-    "Version" : "1.0.0",
-    "Data" :[
+    "version" : "1.0.0",
+    "types" :[
         {
-            "ID" : "LOCAL",
-            "Name" : "普通",
-            "ShortName" : "普",
-            "Stops" : [
-                {
-                    "StationID" : "StationA",
-                    "isStop" : true
-                },
-                {
-                    "StationID" : "StationB",
-                    "isStop" : true
-                },
-                {
-                    "StationID" : "StationC",
-                    "isStop" : true
-                },
-                {
-                    "StationID" : "StationD",
-                    "isStop" : true
-                },
-                {
-                    "StationID" : "StationE",
-                    "isStop" : true
-                }
+            "id" : "LOCAL",
+            "name" : "普通",
+            "shortname" : "普",
+            "stops" : [
+                "StationA","StationB","StationC","StationD","StationE"
             ]
         },        
         {
-            "ID" : "RAPID",
-            "Name" : "快速",
-            "ShortName" : "快",
-            "Stops" : [
-                {
-                    "StationID" : "StationA",
-                    "isStop" : true
-                },
-                {
-                    "StationID" : "StationB",
-                    "isStop" : false
-                },
-                {
-                    "StationID" : "StationC",
-                    "isStop" : true
-                },
-                {
-                    "StationID" : "StationD",
-                    "isStop" : false
-                },
-                {
-                    "StationID" : "StationE",
-                    "isStop" : true
-                }
+            "id" : "RAPID",
+            "name" : "快速",
+            "shortname" : "快",
+            "stops" : [
+                "StationA","StationC","StationE"
             ]
         },
         {
-            "ID" : "EXPRESS",
-            "Name" : "特急",
-            "ShortName" : "特",
-            "Stops" : [
-                {
-                    "StationID" : "StationA",
-                    "isStop" : true
-                },
-                {
-                    "StationID" : "StationB",
-                    "isStop" : false
-                },
-                {
-                    "StationID" : "StationC",
-                    "isStop" : false
-                },
-                {
-                    "StationID" : "StationD",
-                    "isStop" : false
-                },
-                {
-                    "StationID" : "StationE",
-                    "isStop" : true
-                }
+            "id" : "EXPRESS",
+            "name" : "特急",
+            "shortname" : "特",
+            "stops" : [
+                "StationA","StationE"
             ]
         },
                 {
-            "ID" : "EXPRESS",
-            "Name" : "回送",
-            "ShortName" : "回",
-            "Stops" : [
-                {
-                    "StationID" : "StationA",
-                    "isStop" : true
-                },
-                {
-                    "StationID" : "StationB",
-                    "isStop" : false
-                },
-                {
-                    "StationID" : "StationC",
-                    "isStop" : true
-                },
-                {
-                    "StationID" : "StationD",
-                    "isStop" : false
-                },
-                {
-                    "StationID" : "StationE",
-                    "isStop" : true
-                }
+            "id" : "EXPRESS",
+            "name" : "回送",
+            "shortname" : "回",
+            "stops" : [
+                "StationA","StationC","StationE"
             ]
         }
     ]
