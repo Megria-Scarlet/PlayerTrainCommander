@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -86,7 +87,11 @@ namespace PTC.Core.Loader
                         }
                     }
                     if (ver is not null)
+#if !NETSTANDARD2_0
                         return new StationFile(ver, [.. stations]);
+#else
+                        return new StationFile(ver, stations.ToArray());
+#endif
 
                     _ = ver;
                 }

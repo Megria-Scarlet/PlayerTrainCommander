@@ -11,7 +11,11 @@ namespace PTC.Core
     /// <summary>
     /// 列車種別を管理するクラス。
     /// </summary>
+#if !NETSTANDARD2_0
     [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+#else
+    [DebuggerDisplay("{{GetDebuggerDisplay(),nq}}")]
+#endif
     public class ServiceType
     {
         private string id;
@@ -31,7 +35,11 @@ namespace PTC.Core
             this.id = id;
             this.name = name ?? abbreviation;
             this.abbreviation = abbreviation;
+#if !NETSTANDARD2_0
             this.stopStations = [.. stopStations];
+#else
+            this.stopStations = stopStations.ToArray();
+#endif
         }
         /// <summary>
         /// 管理に使用する固有の文字列を取得します。
