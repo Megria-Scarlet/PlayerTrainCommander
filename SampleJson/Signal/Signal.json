@@ -1,0 +1,77 @@
+{
+    "version" : "1.0.0",
+    "data" : [
+        {
+            "id" : "type3",
+            "name" : "3灯式",
+            "lightsize" : 3,
+            "lights" : [
+                "006600","FFFF00","FF0000"
+            ],
+            "speedlimit" : [
+                0,45,-1
+            ],
+            "lightpattern" : {
+                "patternA" : [
+                    false,false,true
+                ],
+                "patternB" : [
+                    false,true,false
+                ],
+                "patternC" : [
+                    true,false,false
+                ]
+            }
+        },
+        {
+            "id" : "type4A",
+            "name" : "4灯式A",
+            "lightsize" : 4,
+            "lights" : [
+                "FFFF00","FF0000","006600","FFFF00"
+            ],
+            "speedlimit" : [
+                0,25,45,-1
+            ],
+            "lightpattern" : {
+                "patternA" : [
+                    false,true,false,false
+                ],
+                "patternB" : [
+                    true,false,false,true
+                ],
+                "patternC" : [
+                    false,false,false,true
+                ],
+                "patternD" : [
+                    false,false,true,false
+                ]
+            }
+        },
+        {
+            "id" : "type4B",
+            "name" : "4灯式B",
+            "lightsize" : 4,
+            "lights" : [
+                "FFFF00","FF0000","FFFF00","006600"
+            ],
+            "speedlimit" : [
+                0,45,75,-1
+            ],
+            "lightpattern" : {
+                "patternA" : [
+                    false,true,false,false
+                ],
+                "patternB" : [
+                    false,false,true,false
+                ],
+                "patternC" : [
+                    true,false,false,true
+                ],
+                "patternD" : [
+                    false,false,false,true
+                ]
+            }
+        }
+    ]
+}
