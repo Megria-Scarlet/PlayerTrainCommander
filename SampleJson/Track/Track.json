@@ -74,7 +74,7 @@
             }
         },
         {
-            "trackid" : "TrackA",
+            "trackid" : "trackA",
             "tracktype" : "Normal",
             "length" : 2000,
             "speedlimit" : 120,
@@ -86,7 +86,7 @@
             }
         },
         {
-            "trackid" : "TrackB",
+            "trackid" : "trackB",
             "tracktype" : "Normal",
             "length" : 2000,
             "speedlimit" : 120,
