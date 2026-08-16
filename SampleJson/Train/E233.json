@@ -1,0 +1,14 @@
+{
+    "version" : "1.0.0",
+    "id": "E233-10",
+    "name": "E233",
+    "cars" : 10,
+    "Seat" : {
+        "Seating" : 54,
+        "Standing" : 200
+    },
+    "Performance" : {
+        "Acceleration" : 3.5,
+        "Deceleration" : 3.5
+    }
+}
