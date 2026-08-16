@@ -28,6 +28,7 @@ namespace PTC.Core
                     {
                         if (reader.TokenType == JsonTokenType.PropertyName)
                         {
+                            System.Diagnostics.Debug.WriteLine($"{reader.ValueSpan.ToString()} を読み取ります。");
                             if (reader.ValueTextEquals(nameof(id)))
                             {
                                 reader.Read();
