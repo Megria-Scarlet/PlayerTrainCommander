@@ -29,7 +29,14 @@ namespace View
             };
             if (openFileDialog.ShowDialog() == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok)
             {
+                string path = openFileDialog.FileName;
+                if (System.IO.Directory.Exists(path))
+                {
+                    foreach (string p in System.IO.Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories))
+                    {
 
+                    }
+                }
             }
         }
     }
