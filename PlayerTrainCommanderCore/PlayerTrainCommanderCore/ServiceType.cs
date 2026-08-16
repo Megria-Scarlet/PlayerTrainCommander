@@ -14,16 +14,22 @@ namespace PTC.Core
     {
         private string id;
         private string? name;
+        private string? abbreviation;
+        private Station[] stopStations;
 
         /// <summary>
         /// 固有の ID と表示名を指定して、新しい <see cref="ServiceType"/> 型のオブジェクトを作成します。
         /// </summary>
         /// <param name="id">固有の ID 。</param>
         /// <param name="name">識別に使用する任意の文字列。</param>
-        public ServiceType(string id, string? name)
+        /// <param name="abbreviation">識別に使用する任意の省略文字列。</param>
+        /// <param name="stopStations">停車駅を列挙するオブジェクト。</param>
+        public ServiceType(string id, string? name, string? abbreviation, IEnumerable<Station> stopStations)
         {
             this.id = id;
-            this.name = name;
+            this.name = name ?? abbreviation;
+            this.abbreviation = abbreviation;
+            this.stopStations = [.. stopStations];
         }
         /// <summary>
         /// 管理に使用する固有の文字列を取得します。
@@ -43,6 +49,24 @@ namespace PTC.Core
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.name;
         }
+        /// <summary>
+        /// 識別に使用する省略文字列を取得します。
+        /// </summary>
+        /// <returns>識別に使用する固有の省略文字列。</returns>
+        public string? Abbreviation
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.abbreviation;
+        }
 
+        /// <summary>
+        /// 停車駅を取得します。
+        /// </summary>
+        /// <returns>停車駅を示す読み取り専用のスパン。</returns>
+        public ReadOnlySpan<Station> StopStations
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.stopStations;
+        }
     }
 }
