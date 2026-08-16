@@ -12,9 +12,9 @@ namespace PTC.Core.Loader
     [JsonConverter(typeof(StationFileJsonConverter))]
     public class StationFile
     {
-        public string version;
+        private string version;
 
-        public Station[] stationlist;
+        private Station[] stationlist;
 
         public StationFile(string version, Station[] stations)
         {
