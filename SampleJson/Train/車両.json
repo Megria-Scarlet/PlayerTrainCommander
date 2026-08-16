@@ -1,0 +1,16 @@
+{
+    "Format" : "Train",
+    "Version" : "1.0.0",
+    "Data" :{
+        "Type" : "E233",
+        "Cars" : 10,
+        "Seat" : {
+            "SeatingCapacity" : 54,
+            "StandingCapacity" : 200
+        },
+        "Performance" : {
+            "Acceleration" : 3.5,
+            "Deceleration" : 3.5
+        }
+    }
+}
