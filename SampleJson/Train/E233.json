@@ -3,11 +3,11 @@
     "id": "E233-10",
     "name": "E233",
     "cars" : 10,
-    "Seat" : {
+    "seat" : {
         "Seating" : 54,
         "Standing" : 200
     },
-    "Performance" : {
+    "performance" : {
         "Acceleration" : 3.5,
         "Deceleration" : 3.5
     }
