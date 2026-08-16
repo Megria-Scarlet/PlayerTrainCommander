@@ -2,7 +2,7 @@
     "Format" : "Train",
     "Version" : "1.0.0",
     "Data" :{
-        "Type" : "E233",
+        "Name" : "E233",
         "Cars" : 10,
         "Seat" : {
             "SeatingCapacity" : 54,

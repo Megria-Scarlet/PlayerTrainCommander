@@ -1,0 +1,114 @@
+{
+    "Format" : "ServiceType",
+    "Version" : "1.0.0",
+    "Data" :[
+        {
+            "ID" : "LOCAL",
+            "Name" : "普通",
+            "ShortName" : "普",
+            "Stops" : [
+                {
+                    "StationID" : "StationA",
+                    "isStop" : true
+                },
+                {
+                    "StationID" : "StationB",
+                    "isStop" : true
+                },
+                {
+                    "StationID" : "StationC",
+                    "isStop" : true
+                },
+                {
+                    "StationID" : "StationD",
+                    "isStop" : true
+                },
+                {
+                    "StationID" : "StationE",
+                    "isStop" : true
+                }
+            ]
+        },        
+        {
+            "ID" : "RAPID",
+            "Name" : "快速",
+            "ShortName" : "快",
+            "Stops" : [
+                {
+                    "StationID" : "StationA",
+                    "isStop" : true
+                },
+                {
+                    "StationID" : "StationB",
+                    "isStop" : false
+                },
+                {
+                    "StationID" : "StationC",
+                    "isStop" : true
+                },
+                {
+                    "StationID" : "StationD",
+                    "isStop" : false
+                },
+                {
+                    "StationID" : "StationE",
+                    "isStop" : true
+                }
+            ]
+        },
+        {
+            "ID" : "EXPRESS",
+            "Name" : "特急",
+            "ShortName" : "特",
+            "Stops" : [
+                {
+                    "StationID" : "StationA",
+                    "isStop" : true
+                },
+                {
+                    "StationID" : "StationB",
+                    "isStop" : false
+                },
+                {
+                    "StationID" : "StationC",
+                    "isStop" : false
+                },
+                {
+                    "StationID" : "StationD",
+                    "isStop" : false
+                },
+                {
+                    "StationID" : "StationE",
+                    "isStop" : true
+                }
+            ]
+        },
+                {
+            "ID" : "EXPRESS",
+            "Name" : "回送",
+            "ShortName" : "回",
+            "Stops" : [
+                {
+                    "StationID" : "StationA",
+                    "isStop" : true
+                },
+                {
+                    "StationID" : "StationB",
+                    "isStop" : false
+                },
+                {
+                    "StationID" : "StationC",
+                    "isStop" : true
+                },
+                {
+                    "StationID" : "StationD",
+                    "isStop" : false
+                },
+                {
+                    "StationID" : "StationE",
+                    "isStop" : true
+                }
+            ]
+        }
+    ]
+}
