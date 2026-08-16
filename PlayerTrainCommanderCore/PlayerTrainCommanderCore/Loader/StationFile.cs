@@ -44,7 +44,7 @@ namespace PTC.Core.Loader
 
     public class StationFileJsonConverter : JsonConverter<StationFile>
     {
-        public override StationFile? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override StationFile? Read(scoped ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (typeToConvert == typeof(StationFile))
             {
