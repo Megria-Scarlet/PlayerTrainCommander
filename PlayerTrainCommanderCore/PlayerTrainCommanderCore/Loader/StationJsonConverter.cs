@@ -28,7 +28,6 @@ namespace PTC.Core
                     {
                         if (reader.TokenType == JsonTokenType.PropertyName)
                         {
-                            System.Diagnostics.Debug.WriteLine($"{reader.ValueSpan.ToString()} を読み取ります。");
                             if (reader.ValueTextEquals(nameof(id)))
                             {
                                 reader.Read();
@@ -74,7 +73,8 @@ namespace PTC.Core
                     if (id is not null)
                         return new Station(id, name, shortname, capacity);
                     else
-                        throw new FormatException("Station:id が取得できなかったお。");
+                        return new Station("ぬるぽ", name, shortname, capacity);
+                    //throw new FormatException("Station:id が取得できなかったお。");
                 }
             }
             return null;
