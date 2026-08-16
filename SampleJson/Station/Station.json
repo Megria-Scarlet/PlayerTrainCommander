@@ -2,50 +2,50 @@
     "version" : "1.0.0",
     "stationlist" :[
         {
-            "stationid" : "StationA",
-            "stationname" : "品河",
+            "id" : "StationA",
+            "name" : "品河",
             "shortname" : "品",
             "stationabbreviation" : "KK01",
-            "passengercapacity": 7000,
-            "passengerdemand" : 5000,
+            "capacity": 7000,
+            "demand" : 5000,
             "situation" : [
                 "Office"
             ]
         },
         {
-            "stationid" : "StationB",
-            "stationname" : "鯖洲",
+            "id" : "StationB",
+            "name" : "鯖洲",
             "shortname" : "鯖",
             "stationabbreviation" : "KK02",
-            "passengercapacity": 5000,
-            "passengerdemand" : 2000,
+            "capacity": 5000,
+            "demand" : 2000,
             "situation" : [
                 "House"
             ]
-        },        
+        },
         {
-            "stationid" : "StationC",
-            "stationname" : "縦浜",
+            "id" : "StationC",
+            "name" : "縦浜",
             "shortname" : "縦",
             "stationabbreviation" : "KK03",
-            "passengercapacity": 10000,
-            "passengerdemand" : 7000
-        },      
+            "capacity": 10000,
+            "demand" : 7000
+        },
         {
-            "stationid" : "StationD",
-            "stationname" : "日ノ入町",
+            "id" : "StationD",
+            "name" : "日ノ入町",
             "shortname" : "日",
             "stationabbreviation" : "KK04",
-            "passengercapacity": 4000,
-            "passengerdemand" : 1500
-        },      
+            "capacity": 4000,
+            "demand" : 1500
+        },
         {
-            "stationid" : "StationD",
-            "stationname" : "二崎口",
+            "id" : "StationD",
+            "name" : "二崎口",
             "shortname" : "二",
             "stationabbreviation" : "KK05",
-            "passengercapacity": 7000,
-            "passengerdemand" : 3000,
+            "capacity": 7000,
+            "demand" : 3000,
             "situation" : [
                 "Sightseeing"
             ]
