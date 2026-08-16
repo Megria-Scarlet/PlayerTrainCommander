@@ -21,7 +21,8 @@
                 "patternC" : [
                     true,false,false
                 ]
-            }
+            },
+            "defaulttype" : true
         },
         {
             "id" : "type4A",
@@ -46,7 +47,8 @@
                 "patternD" : [
                     false,false,true,false
                 ]
-            }
+            },
+            "defaulttype" : false
         },
         {
             "id" : "type4B",
@@ -71,7 +73,8 @@
                 "patternD" : [
                     false,false,false,true
                 ]
-            }
+            },
+            "defaulttype" : false
         },
                 {
             "id" : "type4C",
@@ -99,7 +102,8 @@
             },
             "lightflicker" : [
                 false,false,true,false
-            ]
+            ],
+            "defaulttype" : false
         }
     ]
 }
