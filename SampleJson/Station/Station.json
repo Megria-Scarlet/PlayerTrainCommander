@@ -1,0 +1,55 @@
+{
+    "Format" : "ServiceType",
+    "Version" : "1.0.0",
+    "Data" :[
+        {
+            "StationID" : "StationA",
+            "StationName" : "品河",
+            "ShortName" : "品",
+            "StationAbbreviation" : "KK01",
+            "PassengerCapacity": 7000,
+            "PassengerDemand" : 5000,
+            "Situation" : [
+                "Office"
+            ]
+        },
+        {
+            "StationID" : "StationB",
+            "StationName" : "鯖洲",
+            "ShortName" : "鯖",
+            "StationAbbreviation" : "KK02",
+            "PassengerCapacity": 5000,
+            "PassengerDemand" : 2000,
+            "Situation" : [
+                "House"
+            ]
+        },        
+        {
+            "StationID" : "StationC",
+            "StationName" : "縦浜",
+            "ShortName" : "縦",
+            "StationAbbreviation" : "KK03",
+            "PassengerCapacity": 10000,
+            "PassengerDemand" : 7000
+        },      
+        {
+            "StationID" : "StationD",
+            "StationName" : "日ノ入町",
+            "ShortName" : "日",
+            "StationAbbreviation" : "KK04",
+            "PassengerCapacity": 4000,
+            "PassengerDemand" : 1500
+        },      
+        {
+            "StationID" : "StationD",
+            "StationName" : "二崎口",
+            "ShortName" : "二",
+            "StationAbbreviation" : "KK05",
+            "PassengerCapacity": 7000,
+            "PassengerDemand" : 3000,
+            "Situation" : [
+                "Sightseeing"
+            ]
+        }
+    ]
+}
