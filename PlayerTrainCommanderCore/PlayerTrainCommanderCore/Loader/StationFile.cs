@@ -79,6 +79,8 @@ namespace PTC.Core.Loader
                                         Station? station = JsonSerializer.Deserialize<Station>(ref reader, options);
                                         if (station is not null)
                                             stations.Add(station);
+                                        else
+                                            throw new FormatException("Station クラスを作成できなかったお。");
                                         reader.Read();
                                     }
                                     while (reader.TokenType != JsonTokenType.EndArray);
@@ -90,7 +92,7 @@ namespace PTC.Core.Loader
 #if !NETSTANDARD2_0
                         return new StationFile(ver, [.. stations]);
 #else
-                        return new StationFile(ver, stations.ToArray());
+                        return new StationFile(ver, [.. stations]);
 #endif
 
                     _ = ver;
