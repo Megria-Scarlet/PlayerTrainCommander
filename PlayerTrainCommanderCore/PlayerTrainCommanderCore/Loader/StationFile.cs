@@ -89,11 +89,7 @@ namespace PTC.Core.Loader
                         }
                     }
                     if (ver is not null)
-#if true
                         return new StationFile(ver, [.. stations]);
-#else
-                        return new StationFile(ver, [.. stations]);
-#endif
 
                     _ = ver;
                 }
