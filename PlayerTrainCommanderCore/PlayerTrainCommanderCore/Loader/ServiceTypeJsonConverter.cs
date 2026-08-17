@@ -49,7 +49,7 @@ namespace PTC.Core
                                 reader.Read();
                                 if (reader.TokenType == JsonTokenType.StartArray)
                                 {
-                                    JsonArrayStringEnumerator enumerator = new(reader);
+                                    JsonStringArrayEnumerator enumerator = new(reader);
                                     while (enumerator.MoveNext())
                                     {
                                         string? s = enumerator.Current;
