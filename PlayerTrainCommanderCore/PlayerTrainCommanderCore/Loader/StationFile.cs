@@ -28,6 +28,15 @@ namespace PTC.Core.Loader
         /// <returns>読み取られた <see cref="Station"/> 型のオブジェクト。</returns>
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<Station> GetStationList() => stationlist;
+        /// <summary>
+        /// バージョンを示す文字列を取得します。
+        /// </summary>
+        /// <returns>バージョンを示す文字列。</returns>
+        public string Version
+        {
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => version;
+        }
 
         /// <summary>
         /// json ファイルのストリームからデータを読み取り、 <see cref="StationFile"/> 型のオブジェクトを取得します。
