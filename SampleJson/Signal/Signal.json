@@ -76,7 +76,7 @@
             },
             "defaulttype" : false
         },
-                {
+        {
             "id" : "type4C",
             "name" : "4灯式減速フリッカー",
             "lightsize" : 4,
@@ -103,6 +103,90 @@
             "lightflicker" : [
                 false,false,true,false
             ],
+            "defaulttype" : false
+        },
+        {
+            "id" : "type5A",
+            "name" : "5灯式通常",
+            "lightsize" : 5,
+            "lights" : [
+                "FFFF00","FFFF00","FF0000","FFFF00","006600"
+            ],
+            "speedlimit" : [
+                0,25,45,75,-1
+            ],
+            "lightpattern" : {
+                "patternA" : [
+                    false,false,true,false,false
+                ],
+                "patternB" : [
+                    true,false,false,true,false
+                ],
+                "patternC" : [
+                    false,false,false,true,false
+                ],
+                "patternD" : [
+                    false,true,false,false,true
+                ],
+                "patternE" : [
+                    false,false,false,false,true
+                ]
+            },
+            "defaulttype" : false
+        },
+        {
+            "id" : "type5B",
+            "name" : "5灯式高速進行",
+            "lightsize" : 5,
+            "lights" : [
+                "006600","006600","FFFF00","FF0000","006600"
+            ],
+            "speedlimit" : [
+                0,45,100,-1
+            ],
+            "lightpattern" : {
+                "patternA" : [
+                    false,false,false,true,false
+                ],
+                "patternB" : [
+                    false,false,true,false,false
+                ],
+                "patternC" : [
+                    false,true,false,false,false
+                ],
+                "patternD" : [
+                    true,false,false,false,true
+                ]
+            },
+            "defaulttype" : false
+        },
+        {
+            "id" : "type6",
+            "name" : "6灯式高速進行",
+            "lightsize" : 6,
+            "lights" : [
+                "FFFF00","006600","FF0000","006600","FFFF00","006600"
+            ],
+            "speedlimit" : [
+                0,45,75,100,-1
+            ],
+            "lightpattern" : {
+                "patternA" : [
+                    false,false,true,false,false,false
+                ],
+                "patternB" : [
+                    false,false,false,false,true,false
+                ],
+                "patternC" : [
+                    true,false,false,true,false,false
+                ],
+                "patternD" : [
+                    false,false,false,true,false,false
+                ],
+                "patternE" : [
+                    false,true,false,false,false,true
+                ]
+            },
             "defaulttype" : false
         }
     ]
