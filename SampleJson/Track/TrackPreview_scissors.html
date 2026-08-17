@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Track Preview</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --border: #d8dde6;
+    --text: #1f2937;
+    --muted: #667085;
+    --station: #2563eb;
+    --switch: #d97706;
+    --normal: #111827;
+    --selected: #dc2626;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); }
+  body { background: var(--bg); overflow: hidden; }
+
+  .app { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+  .toolbar {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    background: var(--panel); border-bottom: 1px solid var(--border);
+  }
+  .toolbar h1 { font-size: 16px; margin: 0 14px 0 0; }
+  button, .file-label {
+    appearance: none; border: 1px solid var(--border); background: #fff; color: var(--text);
+    border-radius: 8px; padding: 8px 12px; font-size: 14px; cursor: pointer;
+  }
+  button:hover, .file-label:hover { background: #f2f4f7; }
+  input[type="file"] { display: none; }
+  .status { margin-left: auto; color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .main { display: grid; grid-template-columns: 1fr 320px; min-height: 0; }
+  .viewport-wrap { position: relative; min-width: 0; min-height: 0; background: #fff; }
+  #viewport { width: 100%; height: 100%; display: block; cursor: grab; user-select: none; }
+  #viewport.dragging { cursor: grabbing; }
+
+  .sidebar {
+    border-left: 1px solid var(--border); background: var(--panel); padding: 14px; overflow: auto;
+  }
+  .sidebar h2 { font-size: 15px; margin: 0 0 12px; }
+  .empty { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .details { display: grid; gap: 10px; }
+  .details .row { display: grid; grid-template-columns: 90px 1fr; gap: 8px; font-size: 13px; }
+  .details .label { color: var(--muted); }
+  .details .value { word-break: break-word; }
+  .list { margin: 0; padding-left: 18px; }
+
+  .legend {
+    position: absolute; left: 12px; bottom: 12px; background: rgba(255,255,255,.94);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px;
+    display: flex; gap: 14px; align-items: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .swatch { width: 22px; height: 3px; border-radius: 2px; }
+
+  .track-line { vector-effect: non-scaling-stroke; fill: none; stroke-linecap: round; cursor: pointer; }
+  .track-line.normal { stroke: var(--normal); stroke-width: 4; }
+  .track-line.station { stroke: var(--normal); stroke-width: 5; }
+  .track-line.switch { stroke: var(--normal); stroke-width: 4; }
+  .connector-line { stroke: var(--normal); stroke-width: 4; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+  .track-line.selected { stroke: var(--selected) !important; stroke-width: 8 !important; }
+  .track-label { font-size: 13px; fill: #344054; pointer-events: none; paint-order: stroke; stroke: white; stroke-width: 4px; stroke-linejoin: round; }
+  .node-dot { fill: #fff; stroke: #98a2b3; stroke-width: 2; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .grid-line { stroke: #eef1f5; stroke-width: 1; vector-effect: non-scaling-stroke; }
+
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; grid-template-rows: 1fr 220px; }
+    .sidebar { border-left: 0; border-top: 1px solid var(--border); }
+    .status { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="toolbar">
+    <h1>Track Preview</h1>
+    <label class="file-label" for="fileInput">Track.json を開く</label>
+    <input id="fileInput" type="file" accept="application/json,.json" />
+    <button id="fitBtn" type="button">全体表示</button>
+    <button id="resetBtn" type="button">表示リセット</button>
+    <span id="status" class="status">JSONファイルを選択してください</span>
+  </div>
+
+  <div class="main">
+    <div class="viewport-wrap">
+      <svg id="viewport" xmlns="http://www.w3.org/2000/svg" aria-label="線路配線プレビュー">
+        <g id="scene"></g>
+      </svg>
+      <div class="legend">
+        <div class="legend-item">配線図表示：2→2 Switch はシーサスクロッシングとして描画</div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <h2>線路情報</h2>
+      <div id="details" class="empty">線路をクリックすると詳細を表示します。</div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+  const svg = document.getElementById('viewport');
+  const scene = document.getElementById('scene');
+  const fileInput = document.getElementById('fileInput');
+  const fitBtn = document.getElementById('fitBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const status = document.getElementById('status');
+  const details = document.getElementById('details');
+
+  let tracks = [];
+  let trackMap = new Map();
+  let layout = new Map();
+  let selectedId = null;
+
+  let view = { x: -40, y: -40, w: 1400, h: 800 };
+  let dragging = false;
+  let dragStart = null;
+
+  function setViewBox() {
+    svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`);
+  }
+  setViewBox();
+
+  fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const json = JSON.parse(text);
+      loadTrackData(json, file.name);
+    } catch (err) {
+      status.textContent = `読み込み失敗: ${err.message}`;
+      alert(`JSONの読み込みに失敗しました。\n\n${err.message}`);
+    }
+  });
+
+  fitBtn.addEventListener('click', fitToContent);
+  resetBtn.addEventListener('click', () => {
+    view = { x: -40, y: -40, w: 1400, h: 800 };
+    setViewBox();
+  });
+
+  function loadTrackData(json, filename) {
+    if (!json || !Array.isArray(json.data)) {
+      throw new Error('ルート要素に data 配列がありません。');
+    }
+
+    tracks = json.data.map((t, index) => ({
+      trackid: String(t.trackid ?? `track-${index}`),
+      tracktype: String(t.tracktype ?? 'Normal'),
+      length: Number(t.length ?? 0),
+      speedlimit: Number(t.speedlimit ?? 0),
+      joins: {
+        joinupids: Array.isArray(t.joins?.joinupids) ? t.joins.joinupids.map(String) : [],
+        joindownids: Array.isArray(t.joins?.joindownids) ? t.joins.joindownids.map(String) : []
+      }
+    }));
+
+    trackMap = new Map(tracks.map(t => [t.trackid, t]));
+    validateConnections();
+    calculateLayout();
+    selectedId = null;
+    render();
+    fitToContent();
+    details.className = 'empty';
+    details.textContent = '線路をクリックすると詳細を表示します。';
+    status.textContent = `${filename}: ${tracks.length} 要素を読み込みました`;
+  }
+
+  function validateConnections() {
+    const missing = [];
+    for (const t of tracks) {
+      for (const id of [...t.joins.joinupids, ...t.joins.joindownids]) {
+        if (!trackMap.has(id)) missing.push(`${t.trackid} → ${id}`);
+      }
+    }
+    if (missing.length) {
+      console.warn('存在しない接続先があります:', missing);
+    }
+  }
+
+  // 鉄道配線図向けレイアウト。
+  // Station / Normal は水平な線路、Switch は joinupids / joindownids の
+  // 本数に応じて合流・分岐・渡り線として描画する。
+  function calculateLayout() {
+    layout.clear();
+
+    const depth = calculateDepths();
+    const maxDepth = Math.max(0, ...depth.values());
+
+    const xGap = 190;
+    const segmentWidth = 135;
+    const switchWidth = 120;
+    const yGap = 78;
+
+    const leftPorts = new Map();
+    const rightPorts = new Map();
+
+    const roots = tracks.filter(t => t.joins.joinupids.length === 0);
+
+    // JSONに登場した順番を基本として、始点線路を上から配置。
+    roots.forEach((t, i) => {
+      const y = i * yGap;
+      leftPorts.set(t.trackid, [y]);
+      rightPorts.set(t.trackid, [y]);
+    });
+
+    for (let d = 0; d <= maxDepth; d++) {
+      const group = tracks.filter(t => depth.get(t.trackid) === d);
+
+      for (const t of group) {
+        const inputYs = [];
+
+        for (const upId of t.joins.joinupids) {
+          if (!rightPorts.has(upId)) continue;
+          inputYs.push(outputYForConnection(upId, t.trackid, rightPorts));
+        }
+
+        if (!inputYs.length) {
+          const existing = leftPorts.get(t.trackid);
+          inputYs.push(existing && existing.length ? existing[0] : nextFreeY(leftPorts, yGap));
+        }
+
+        if (t.tracktype.toLowerCase() !== 'switch') {
+          const y = average(inputYs);
+          leftPorts.set(t.trackid, [y]);
+          rightPorts.set(t.trackid, [y]);
+          continue;
+        }
+
+        leftPorts.set(t.trackid, inputYs.slice());
+
+        const downCount = Math.max(1, t.joins.joindownids.length);
+        let outputYs = [];
+
+        if (inputYs.length === 2 && downCount === 2) {
+          // 2→2 はシーサスクロッシングとして扱う。
+          // 上下2本の本線はそのまま直進し、その間にX字の渡り線を描く。
+          // したがって出力側の高さは入力側と同じ順序を維持する。
+          outputYs = inputYs.slice();
+        } else if (downCount === 1) {
+          // 複数→1 は中央へ合流。
+          outputYs = [average(inputYs)];
+        } else if (inputYs.length === 1 && downCount > 1) {
+          // 1→複数は上下へ分岐。
+          const center = inputYs[0];
+          const first = center - ((downCount - 1) * yGap) / 2;
+          for (let i = 0; i < downCount; i++) {
+            outputYs.push(first + i * yGap);
+          }
+        } else {
+          const minY = Math.min(...inputYs);
+          const maxY = Math.max(...inputYs);
+
+          if (downCount === 1) {
+            outputYs.push((minY + maxY) / 2);
+          } else {
+            for (let i = 0; i < downCount; i++) {
+              outputYs.push(minY + (maxY - minY) * i / Math.max(1, downCount - 1));
+            }
+          }
+        }
+
+        rightPorts.set(t.trackid, outputYs);
+      }
+    }
+
+    // 下流の通常線路を、上流Switchの出力高さに合わせる。
+    for (let pass = 0; pass < tracks.length; pass++) {
+      let changed = false;
+
+      for (const t of tracks) {
+        if (t.tracktype.toLowerCase() === 'switch') continue;
+        if (!t.joins.joinupids.length) continue;
+
+        const ys = [];
+        for (const upId of t.joins.joinupids) {
+          if (!rightPorts.has(upId)) continue;
+          ys.push(outputYForConnection(upId, t.trackid, rightPorts));
+        }
+
+        if (!ys.length) continue;
+
+        const y = average(ys);
+        const old = leftPorts.get(t.trackid)?.[0];
+
+        if (old === undefined || Math.abs(old - y) > 0.01) {
+          leftPorts.set(t.trackid, [y]);
+          rightPorts.set(t.trackid, [y]);
+          changed = true;
+        }
+      }
+
+      if (!changed) break;
+    }
+
+    for (const t of tracks) {
+      const d = depth.get(t.trackid) ?? 0;
+      const x1 = d * xGap;
+      const width = t.tracktype.toLowerCase() === 'switch'
+        ? switchWidth
+        : clamp(90 + Math.sqrt(Math.max(0, t.length)) * 3.0, 110, segmentWidth);
+
+      layout.set(t.trackid, {
+        x1,
+        x2: x1 + width,
+        inputYs: (leftPorts.get(t.trackid) || [0]).slice(),
+        outputYs: (rightPorts.get(t.trackid) || leftPorts.get(t.trackid) || [0]).slice(),
+        depth: d
+      });
+    }
+  }
+
+  function calculateDepths() {
+    const indegree = new Map(tracks.map(t => [t.trackid, 0]));
+
+    for (const t of tracks) {
+      for (const id of t.joins.joindownids) {
+        if (indegree.has(id)) indegree.set(id, indegree.get(id) + 1);
+      }
+    }
+
+    let roots = tracks.filter(t => indegree.get(t.trackid) === 0);
+    if (!roots.length && tracks.length) roots = [tracks[0]];
+
+    const depth = new Map();
+    const queue = roots.map(t => t.trackid);
+    roots.forEach(t => depth.set(t.trackid, 0));
+
+    let guard = 0;
+    while (queue.length && guard++ < tracks.length * tracks.length + 10) {
+      const id = queue.shift();
+      const t = trackMap.get(id);
+      if (!t) continue;
+
+      const d = depth.get(id) ?? 0;
+      for (const next of t.joins.joindownids) {
+        if (!trackMap.has(next)) continue;
+
+        const nd = d + 1;
+        if (!depth.has(next) || nd > depth.get(next)) {
+          depth.set(next, nd);
+          queue.push(next);
+        }
+      }
+    }
+
+    let fallback = Math.max(0, ...depth.values()) + 1;
+    for (const t of tracks) {
+      if (!depth.has(t.trackid)) depth.set(t.trackid, fallback++);
+    }
+
+    return depth;
+  }
+
+  function outputYForConnection(upId, downId, rightPorts) {
+    const up = trackMap.get(upId);
+    const ys = rightPorts.get(upId);
+    if (!ys || !ys.length) return 0;
+
+    if (!up || up.tracktype.toLowerCase() !== 'switch') return ys[0];
+
+    const index = up.joins.joindownids.indexOf(downId);
+    if (index >= 0 && index < ys.length) return ys[index];
+
+    return ys[0];
+  }
+
+  function nextFreeY(portMap, yGap) {
+    const values = [];
+    for (const ys of portMap.values()) values.push(...ys);
+    if (!values.length) return 0;
+    return Math.max(...values) + yGap;
+  }
+
+  function average(values) {
+    if (!values.length) return 0;
+    return values.reduce((a, b) => a + b, 0) / values.length;
+  }
+
+  function render() {
+    scene.innerHTML = '';
+    if (!tracks.length) return;
+
+    drawGrid();
+
+    // 要素間の空白部分を接続する。
+    for (const t of tracks) {
+      const p = layout.get(t.trackid);
+      if (!p) continue;
+
+      for (const downId of t.joins.joindownids) {
+        const q = layout.get(downId);
+        if (!q) continue;
+
+        const y1 = layoutOutputY(t.trackid, downId);
+        const y2 = connectionInputY(downId, t.trackid);
+
+        scene.appendChild(svgEl('line', {
+          x1: p.x2,
+          y1,
+          x2: q.x1,
+          y2,
+          class: 'connector-line'
+        }));
+      }
+    }
+
+    for (const t of tracks) {
+      const p = layout.get(t.trackid);
+      if (!p) continue;
+
+      if (t.tracktype.toLowerCase() === 'switch') {
+        drawSwitchTrack(t, p);
+      } else {
+        drawStraightTrack(t, p);
+      }
+
+      drawTrackLabel(t, p);
+    }
+  }
+
+  function layoutOutputY(trackId, downId) {
+    const t = trackMap.get(trackId);
+    const p = layout.get(trackId);
+    if (!t || !p) return 0;
+
+    if (t.tracktype.toLowerCase() !== 'switch') {
+      return p.outputYs[0] ?? 0;
+    }
+
+    const index = t.joins.joindownids.indexOf(downId);
+    if (index >= 0 && index < p.outputYs.length) {
+      return p.outputYs[index];
+    }
+
+    return p.outputYs[0] ?? 0;
+  }
+
+  function connectionInputY(trackId, upId) {
+    const t = trackMap.get(trackId);
+    const p = layout.get(trackId);
+    if (!t || !p) return 0;
+
+    if (t.tracktype.toLowerCase() !== 'switch') {
+      return p.inputYs[0] ?? 0;
+    }
+
+    const index = t.joins.joinupids.indexOf(upId);
+    if (index >= 0 && index < p.inputYs.length) {
+      return p.inputYs[index];
+    }
+
+    return p.inputYs[0] ?? 0;
+  }
+
+  function drawStraightTrack(t, p) {
+    const y = p.inputYs[0] ?? 0;
+    const cls = typeClass(t.tracktype);
+
+    const line = svgEl('line', {
+      x1: p.x1,
+      y1: y,
+      x2: p.x2,
+      y2: y,
+      class: `track-line ${cls}${selectedId === t.trackid ? ' selected' : ''}`,
+      'data-trackid': t.trackid
+    });
+
+    attachTrackClick(line, t.trackid);
+    scene.appendChild(line);
+  }
+
+  function drawSwitchTrack(t, p) {
+    const inputs = p.inputYs;
+    const outputs = p.outputYs;
+
+    // 2→2 はシーサスクロッシング。
+    // 上下の本線2本を直進させ、その間に2本の渡り線をX字に配置する。
+    if (inputs.length === 2 && outputs.length === 2) {
+      const topY = Math.min(inputs[0], inputs[1]);
+      const bottomY = Math.max(inputs[0], inputs[1]);
+
+      const cls = `track-line switch${selectedId === t.trackid ? ' selected' : ''}`;
+
+      // 上下の本線。
+      const topMain = svgEl('line', {
+        x1: p.x1,
+        y1: topY,
+        x2: p.x2,
+        y2: topY,
+        class: cls,
+        'data-trackid': t.trackid
+      });
+
+      const bottomMain = svgEl('line', {
+        x1: p.x1,
+        y1: bottomY,
+        x2: p.x2,
+        y2: bottomY,
+        class: cls,
+        'data-trackid': t.trackid
+      });
+
+      attachTrackClick(topMain, t.trackid);
+      attachTrackClick(bottomMain, t.trackid);
+      scene.appendChild(topMain);
+      scene.appendChild(bottomMain);
+
+      // 実際のシーサスらしく、X線は端から端までではなく
+      // 本線内側のポイント位置から開始・終了する。
+      const inset = Math.min(22, Math.max(10, (p.x2 - p.x1) * 0.16));
+      const leftX = p.x1 + inset;
+      const rightX = p.x2 - inset;
+
+      const cross1 = svgEl('line', {
+        x1: leftX,
+        y1: topY,
+        x2: rightX,
+        y2: bottomY,
+        class: cls,
+        'data-trackid': t.trackid
+      });
+
+      const cross2 = svgEl('line', {
+        x1: leftX,
+        y1: bottomY,
+        x2: rightX,
+        y2: topY,
+        class: cls,
+        'data-trackid': t.trackid
+      });
+
+      attachTrackClick(cross1, t.trackid);
+      attachTrackClick(cross2, t.trackid);
+      scene.appendChild(cross1);
+      scene.appendChild(cross2);
+
+      return;
+    }
+
+    // 複数→1
+    if (outputs.length === 1) {
+      for (const y of inputs) {
+        const line = svgEl('line', {
+          x1: p.x1,
+          y1: y,
+          x2: p.x2,
+          y2: outputs[0],
+          class: `track-line switch${selectedId === t.trackid ? ' selected' : ''}`,
+          'data-trackid': t.trackid
+        });
+        attachTrackClick(line, t.trackid);
+        scene.appendChild(line);
+      }
+      return;
+    }
+
+    // 1→複数
+    if (inputs.length === 1) {
+      for (const y of outputs) {
+        const line = svgEl('line', {
+          x1: p.x1,
+          y1: inputs[0],
+          x2: p.x2,
+          y2: y,
+          class: `track-line switch${selectedId === t.trackid ? ' selected' : ''}`,
+          'data-trackid': t.trackid
+        });
+        attachTrackClick(line, t.trackid);
+        scene.appendChild(line);
+      }
+      return;
+    }
+
+    const count = Math.max(inputs.length, outputs.length);
+    for (let i = 0; i < count; i++) {
+      const y1 = inputs[Math.min(i, inputs.length - 1)] ?? 0;
+      const y2 = outputs[Math.min(i, outputs.length - 1)] ?? y1;
+
+      const line = svgEl('line', {
+        x1: p.x1,
+        y1,
+        x2: p.x2,
+        y2,
+        class: `track-line switch${selectedId === t.trackid ? ' selected' : ''}`,
+        'data-trackid': t.trackid
+      });
+
+      attachTrackClick(line, t.trackid);
+      scene.appendChild(line);
+    }
+  }
+
+  function drawTrackLabel(t, p) {
+    const ys = [...p.inputYs, ...p.outputYs];
+    const topY = Math.min(...ys);
+
+    const label = svgEl('text', {
+      x: p.x1 + 4,
+      y: topY - 10,
+      'text-anchor': 'start',
+      class: 'track-label'
+    });
+
+    label.textContent = t.trackid;
+    scene.appendChild(label);
+  }
+
+  function attachTrackClick(element, trackId) {
+    element.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      selectTrack(trackId);
+    });
+  }
+
+  function drawGrid() {
+    const bounds = getContentBounds(500);
+    const step = 100;
+    for (let x = Math.floor(bounds.minX / step) * step; x <= bounds.maxX; x += step) {
+      scene.appendChild(svgEl('line', { x1: x, y1: bounds.minY, x2: x, y2: bounds.maxY, class: 'grid-line' }));
+    }
+    for (let y = Math.floor(bounds.minY / step) * step; y <= bounds.maxY; y += step) {
+      scene.appendChild(svgEl('line', { x1: bounds.minX, y1: y, x2: bounds.maxX, y2: y, class: 'grid-line' }));
+    }
+  }
+
+  function selectTrack(id) {
+    selectedId = id;
+    render();
+    const t = trackMap.get(id);
+    if (!t) return;
+
+    details.className = 'details';
+    details.innerHTML = `
+      ${detailRow('ID', escapeHtml(t.trackid))}
+      ${detailRow('種類', escapeHtml(t.tracktype))}
+      ${detailRow('長さ', `${formatNumber(t.length)} m`)}
+      ${detailRow('制限速度', `${formatNumber(t.speedlimit)} km/h`)}
+      ${detailRow('上流', listHtml(t.joins.joinupids))}
+      ${detailRow('下流', listHtml(t.joins.joindownids))}
+    `;
+  }
+
+  function detailRow(label, value) {
+    return `<div class="row"><div class="label">${label}</div><div class="value">${value}</div></div>`;
+  }
+
+  function listHtml(items) {
+    if (!items.length) return '<span style="color:#98a2b3">なし</span>';
+    return `<ul class="list">${items.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>`;
+  }
+
+  function fitToContent() {
+    if (!layout.size) return;
+    const b = getContentBounds(70);
+    const rect = svg.getBoundingClientRect();
+    const aspect = Math.max(0.1, rect.width / Math.max(1, rect.height));
+    let w = Math.max(300, b.maxX - b.minX);
+    let h = Math.max(200, b.maxY - b.minY);
+    const contentAspect = w / h;
+
+    if (contentAspect > aspect) h = w / aspect;
+    else w = h * aspect;
+
+    const cx = (b.minX + b.maxX) / 2;
+    const cy = (b.minY + b.maxY) / 2;
+    view = { x: cx - w / 2, y: cy - h / 2, w, h };
+    setViewBox();
+  }
+
+  function getContentBounds(padding = 0) {
+    if (!layout.size) return { minX: 0, minY: 0, maxX: 1000, maxY: 600 };
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const p of layout.values()) {
+      const ys = [...(p.inputYs || []), ...(p.outputYs || [])];
+      minX = Math.min(minX, p.x1, p.x2);
+      maxX = Math.max(maxX, p.x1, p.x2);
+      for (const y of ys) {
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+      }
+    }
+    return { minX: minX - padding, minY: minY - padding, maxX: maxX + padding, maxY: maxY + padding };
+  }
+
+
+  function typeClass(type) {
+    const t = String(type).toLowerCase();
+    if (t === 'station') return 'station';
+    if (t === 'switch') return 'switch';
+    return 'normal';
+  }
+
+  function svgEl(name, attrs) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', name);
+    for (const [k, v] of Object.entries(attrs || {})) el.setAttribute(k, String(v));
+    return el;
+  }
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+  function formatNumber(v) { return Number.isFinite(v) ? new Intl.NumberFormat('ja-JP').format(v) : '-'; }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+
+  // ズーム
+  svg.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = svg.getBoundingClientRect();
+    const mx = view.x + (e.clientX - rect.left) / rect.width * view.w;
+    const my = view.y + (e.clientY - rect.top) / rect.height * view.h;
+    const factor = e.deltaY > 0 ? 1.12 : 0.89;
+    const newW = clamp(view.w * factor, 250, 12000);
+    const newH = clamp(view.h * factor, 150, 8000);
+    const rx = (mx - view.x) / view.w;
+    const ry = (my - view.y) / view.h;
+    view.x = mx - rx * newW;
+    view.y = my - ry * newH;
+    view.w = newW;
+    view.h = newH;
+    setViewBox();
+  }, { passive: false });
+
+  // ドラッグ移動
+  svg.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    dragging = true;
+    svg.classList.add('dragging');
+    svg.setPointerCapture(e.pointerId);
+    dragStart = { clientX: e.clientX, clientY: e.clientY, x: view.x, y: view.y };
+  });
+
+  svg.addEventListener('pointermove', (e) => {
+    if (!dragging || !dragStart) return;
+    const rect = svg.getBoundingClientRect();
+    const dx = (e.clientX - dragStart.clientX) / rect.width * view.w;
+    const dy = (e.clientY - dragStart.clientY) / rect.height * view.h;
+    view.x = dragStart.x - dx;
+    view.y = dragStart.y - dy;
+    setViewBox();
+  });
+
+  svg.addEventListener('pointerup', (e) => {
+    dragging = false;
+    dragStart = null;
+    svg.classList.remove('dragging');
+    try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  svg.addEventListener('pointercancel', () => {
+    dragging = false;
+    dragStart = null;
+    svg.classList.remove('dragging');
+  });
+
+  svg.addEventListener('click', () => {
+    if (selectedId !== null) {
+      selectedId = null;
+      render();
+      details.className = 'empty';
+      details.textContent = '線路をクリックすると詳細を表示します。';
+    }
+  });
+})();
+</script>
+</body>
+</html>
