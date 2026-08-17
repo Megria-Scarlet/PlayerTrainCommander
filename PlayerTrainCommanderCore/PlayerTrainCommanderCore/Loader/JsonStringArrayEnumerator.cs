@@ -9,7 +9,7 @@ namespace PTC.Core
     /// <summary>
     /// <see cref="Utf8JsonReader"/> から <see cref="string"/> 型の配列を列挙する構造体。
     /// </summary>
-    public ref struct JsonArrayStringEnumerator : IEnumerator<string?>
+    public ref struct JsonStringArrayEnumerator : IEnumerator<string?>
     {
         private Utf8JsonReader reader;
         private string? current;
@@ -20,7 +20,7 @@ namespace PTC.Core
         /// </summary>
         /// <param name="reader"><see cref="Utf8JsonReader"/> 型のオブジェクト。</param>
         /// <remarks>現在の <see cref="Utf8JsonReader.TokenType"/> は <see cref="JsonTokenType.StartArray"/> を示している必要があります。</remarks>
-        public JsonArrayStringEnumerator(Utf8JsonReader reader)
+        public JsonStringArrayEnumerator(Utf8JsonReader reader)
         {
             this.reader = reader;
             this.isRead = false;
