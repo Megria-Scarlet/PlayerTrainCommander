@@ -13,7 +13,15 @@ namespace PTC.Core
     {
         public override Train? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            if (typeof(Train).IsAssignableFrom(typeToConvert))
+            {
+                JsonElement element = JsonElement.ParseValue(ref reader);
+                string ver = element.GetProperty("version").ToString();
+                string? name = element.GetProperty("name").ToString();
+                if (!element.GetProperty("totallength").TryGetUInt32(out uint totallength))
+                    totallength = 0;
+            }
+            return null;
         }
 
         public override void Write(Utf8JsonWriter writer, Train value, JsonSerializerOptions options)
