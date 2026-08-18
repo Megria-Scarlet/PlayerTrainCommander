@@ -95,6 +95,12 @@ namespace PTC.Core
         {
             throw new InvalidOperationException();
         }
+
+        public readonly Utf8JsonReader Reader
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => reader;
+        }
     }
 
 }

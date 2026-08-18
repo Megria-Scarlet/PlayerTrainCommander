@@ -83,6 +83,20 @@ namespace View
                         _ = serviceTypeFile;
                     }
 
+                    var trainInfo = directoryInfo.EnumerateDirectories().FirstOrDefault(x => x.Name.Equals("Train", StringComparison.InvariantCultureIgnoreCase));
+                    if (trainInfo is null)
+                    {
+                        string msg = "Train フォルダーがありません。";
+                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    foreach (var trainTile in trainInfo.EnumerateFiles())
+                    {
+                        using System.IO.FileStream fileStream = trainTile.OpenRead();
+                        var t = JsonSerializer.Deserialize<PTC.Core.Train>(fileStream);
+                        _ = t;
+                    }
+
 
 
                     foreach (string p in System.IO.Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories))
