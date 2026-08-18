@@ -8,7 +8,7 @@
             "stops" : [
                 "StationA","StationB","StationC","StationD","StationE"
             ]
-        },        
+        },
         {
             "id" : "RAPID",
             "name" : "快速",
@@ -18,7 +18,7 @@
             ]
         },
         {
-            "id" : "EXPRESS",
+            "id" : "LIMITED",
             "name" : "特急",
             "shortname" : "特",
             "stops" : [
