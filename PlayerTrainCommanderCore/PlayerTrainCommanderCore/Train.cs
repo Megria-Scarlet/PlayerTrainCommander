@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace PTC.Core
 {
+    [JsonConverter(typeof(TrainJsonConverter))]
     public class Train
     {
         private string id;
