@@ -1,11 +1,16 @@
 using System;
+using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace PTC.Core
 {
+    /// <summary>
+    /// 車両データを定義するクラス。
+    /// </summary>
     [JsonConverter(typeof(TrainJsonConverter))]
-    public class Train
+    public class Train : IInherentObject
     {
         private string id;
         private string? name;
@@ -23,9 +28,38 @@ namespace PTC.Core
             this.acceleration = acceleration;
             this.deceleration = deceleration;
         }
+
+        /// <inheritdoc/>
+        public string Id
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return id; }
+        }
+        /// <inheritdoc cref="Station.Name"/>
+        public string? Name
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.name;
+        }
+
+        /// <summary>
+        /// json ファイルのストリームからデータを読み取り、 <see cref="Train"/> 型のオブジェクトを取得します。
+        /// </summary>
+        /// <param name="utf8Json">json ファイルのストリーム。</param>
+        /// <returns>json ファイルから読み取られた <see cref="Train"/> 型のオブジェクト。</returns>
+        /// <param name="options">デシリアライズに使用するオプション。</param>
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public static Train? FromJson(Stream utf8Json, JsonSerializerOptions? options = null)
+        {
+            return JsonSerializer.Deserialize<Train>(utf8Json, options);
+        }
     }
+    /// <summary>
+    /// <see cref="Train"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
+    /// </summary>
     public class TrainJsonConverter : JsonConverter<Train>
     {
+        /// <inheritdoc/>
         public override Train? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (typeof(Train).IsAssignableFrom(typeToConvert))
@@ -51,6 +85,7 @@ namespace PTC.Core
             return null;
         }
 
+        /// <inheritdoc/>
         public override void Write(Utf8JsonWriter writer, Train value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
