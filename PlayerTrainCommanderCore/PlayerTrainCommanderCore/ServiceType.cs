@@ -17,7 +17,6 @@ namespace PTC.Core
         private string id;
         private string? name;
         private string? abbreviation;
-        private string[] stopStationIds;
         private Station[] stopStations;
 
         /// <summary>
@@ -26,14 +25,13 @@ namespace PTC.Core
         /// <param name="id">固有の ID 。</param>
         /// <param name="name">識別に使用する任意の文字列。</param>
         /// <param name="abbreviation">識別に使用する任意の省略文字列。</param>
-        /// <param name="stopStations">停車駅の Id を列挙するオブジェクト。</param>
-        public ServiceType(string id, string? name, string? abbreviation, IEnumerable<string> stopStations)
+        /// <param name="stopStations">停車駅を列挙するオブジェクト。</param>
+        public ServiceType(string id, string? name, string? abbreviation, IEnumerable<Station> stopStations)
         {
             this.id = id;
             this.name = name ?? abbreviation;
             this.abbreviation = abbreviation;
-            this.stopStationIds = [..stopStations];
-            this.stopStations = [];
+            this.stopStations = [.. stopStations];
         }
         /// <summary>
         /// 管理に使用する固有の文字列を取得します。

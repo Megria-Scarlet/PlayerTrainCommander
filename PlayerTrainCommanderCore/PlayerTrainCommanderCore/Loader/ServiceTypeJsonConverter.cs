@@ -7,8 +7,28 @@ using System.Text.Json.Serialization;
 
 namespace PTC.Core
 {
+    /// <summary>
+    /// <see cref="ServiceType"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
+    /// </summary>
     public class ServiceTypeJsonConverter : JsonConverter<ServiceType>
     {
+        private Station[] stations;
+
+        /// <summary>
+        /// <see cref="Station"/> コレクションを指定して、新しい <see cref="ServiceTypeJsonConverter"/> 型のオブジェクトを作成します。
+        /// </summary>
+        /// <param name="stations"><see cref="Station"/> コレクション。</param>
+        public ServiceTypeJsonConverter(IEnumerable<Station> stations)
+        {
+            this.stations = [.. stations];
+        }
+        /// <inheritdoc cref="ServiceTypeJsonConverter(IEnumerable{Station})"/>
+        public ServiceTypeJsonConverter(scoped ReadOnlySpan<Station> stations)
+        {
+            this.stations = stations.ToArray();
+        }
+
+
         /// <inheritdoc/>
         public override ServiceType? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
