@@ -13,12 +13,13 @@ namespace PTC.Core.Loader
     [JsonConverter(typeof(ServiceTypeFileJsonConverter))]
     public class ServiceTypeFile
     {
+        private string version;
         private ServiceType[] serviceTypes;
-        public ServiceTypeFile(IEnumerable<ServiceType> serviceTypes)
+        public ServiceTypeFile(string version, IEnumerable<ServiceType> serviceTypes)
         {
             this.serviceTypes = [.. serviceTypes];
         }
-        public ServiceTypeFile(scoped ReadOnlySpan<ServiceType> serviceTypes)
+        public ServiceTypeFile(string version, scoped ReadOnlySpan<ServiceType> serviceTypes)
         {
             this.serviceTypes = serviceTypes.ToArray();
         }
@@ -101,7 +102,7 @@ namespace PTC.Core.Loader
                     }
                 }
                 if (ver is not null)
-                    return new ServiceTypeFile(services);
+                    return new ServiceTypeFile(ver, services);
                 else
                     throw new JsonException("プロパティ \"version\" が見つかりませんでした。");
             }
