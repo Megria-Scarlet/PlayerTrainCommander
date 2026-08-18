@@ -39,7 +39,7 @@ namespace PTC.Core
                     string? id = null;
                     string? name = null;
                     string? shortname = null;
-                    List<string> stations = new(8);
+                    List<Station> stations = new(8);
 
 
                     int startDepth = reader.CurrentDepth;
@@ -73,9 +73,9 @@ namespace PTC.Core
                                     while (enumerator.MoveNext())
                                     {
                                         string? s = enumerator.Current;
-                                        if (s is not null)
+                                        if (s is not null && TryGetStation(s, out Station? station))
                                         {
-                                            stations.Add(s);
+                                            stations.Add(station);
                                         }
                                     }
                                 }
@@ -105,6 +105,26 @@ namespace PTC.Core
         {
             throw new NotImplementedException();
         }
+
+#if NET
+        private bool TryGetStation(in string id, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Station? station)
+#else
+        private bool TryGetStation(in string id, out Station station)
+#endif
+        {
+            for (int i = 0; i < this.stations.Length; i++)
+            {
+                ref Station station1 = ref this.stations[i];
+                if (station1.Id == id)
+                {
+                    station = station1;
+                    return true;
+                }
+            }
+            station = default!;
+            return false;
+        }
+
     }
 
 }
