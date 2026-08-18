@@ -11,6 +11,18 @@ namespace PTC.Core
         private string? name;
         private uint seating;
         private uint standing;
+        private float acceleration;
+        private float deceleration;
+
+        public Train(string id, string? name, uint seating, uint standing, float acceleration, float deceleration)
+        {
+            this.id = id;
+            this.name = name;
+            this.seating = seating;
+            this.standing = standing;
+            this.acceleration = acceleration;
+            this.deceleration = deceleration;
+        }
     }
     public class TrainJsonConverter : JsonConverter<Train>
     {
@@ -21,6 +33,7 @@ namespace PTC.Core
                 JsonElement element = JsonElement.ParseValue(ref reader);
                 string ver = element.GetProperty("version").ToString();
                 string? name = element.GetProperty("name").ToString();
+                string? id = element.GetProperty("id").ToString();
                 if (!element.GetProperty("totallength").TryGetUInt32(out uint totallength))
                     totallength = 0;
                 JsonElement element1 = element.GetProperty("seat");
@@ -33,6 +46,7 @@ namespace PTC.Core
                     acceleration = 0;
                 if (!element1.GetProperty("deceleration").TryGetSingle(out float deceleration))
                     deceleration = 0;
+                return new Train(id, name, seat, stand, acceleration, deceleration);
             }
             return null;
         }
