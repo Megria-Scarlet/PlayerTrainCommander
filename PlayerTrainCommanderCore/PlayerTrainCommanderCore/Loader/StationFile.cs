@@ -27,7 +27,17 @@ namespace PTC.Core.Loader
         /// </summary>
         /// <returns>読み取られた <see cref="Station"/> 型のオブジェクト。</returns>
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        [Obsolete("Used \"Stations\".", true)]
         public ReadOnlySpan<Station> GetStationList() => stationlist;
+        /// <summary>
+        /// <see cref="Station"/> 型のオブジェクトを取得します。
+        /// </summary>
+        /// <returns>読み取られた <see cref="Station"/> 型のオブジェクト。</returns>
+        public ReadOnlySpan<Station> Stations
+        {
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => stationlist;
+        }
         /// <summary>
         /// バージョンを示す文字列を取得します。
         /// </summary>
