@@ -43,29 +43,44 @@ namespace View
                         MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
-                    var stationFile = staitonInfo.EnumerateFiles().FirstOrDefault(x => x.Name.Equals("station.json", StringComparison.InvariantCultureIgnoreCase));
-                    if (stationFile is null)
+                    var stationFileInfo = staitonInfo.EnumerateFiles().FirstOrDefault(x => x.Name.Equals("station.json", StringComparison.InvariantCultureIgnoreCase));
+                    if (stationFileInfo is null)
                     {
-                        string msg = "staiton ファイルがありません。";
+                        string msg = "station.json ファイルがありません。";
                         MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
+                    PTC.Core.Loader.StationFile stationFile;
                     {
-                        using System.IO.FileStream fileStream = stationFile.OpenRead();
+                        using System.IO.FileStream fileStream = stationFileInfo.OpenRead();
 
                         JsonSerializerOptions serializerOptions = new JsonSerializerOptions();
                         serializerOptions.Converters.Add(new PTC.Core.StationJsonConverter());
                         serializerOptions.Converters.Add(new PTC.Core.Loader.StationFileJsonConverter());
                         serializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All);
 
-                        var obj = PTC.Core.Loader.StationFile.FromJson(fileStream, serializerOptions);
-                        _ = obj;
+                        stationFile = PTC.Core.Loader.StationFile.FromJson(fileStream, serializerOptions)!;
                     }
 
                     var serviceTypeInfo = directoryInfo.EnumerateDirectories().FirstOrDefault(x => x.Name.Equals("ServiceType", StringComparison.InvariantCultureIgnoreCase));
-                    if (serviceTypeInfo is not null)
+                    if (serviceTypeInfo is null)
                     {
-
+                        string msg = "ServiceType フォルダーがありません。";
+                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    var serviceTypeFileInfo = serviceTypeInfo.EnumerateFiles().FirstOrDefault(x => x.Name.Equals("ServiceType.json", StringComparison.InvariantCultureIgnoreCase));
+                    if (serviceTypeFileInfo is null)
+                    {
+                        string msg = "ServiceType.json ファイルがありません。";
+                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    PTC.Core.Loader.ServiceTypeFile serviceTypeFile;
+                    {
+                        using System.IO.FileStream fileStream = serviceTypeFileInfo.OpenRead();
+                        serviceTypeFile = PTC.Core.Loader.ServiceTypeFile.FromJson(fileStream, stationFile.Stations)!;
+                        _ = serviceTypeFile;
                     }
 
 
