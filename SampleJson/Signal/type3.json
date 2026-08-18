@@ -1,0 +1,24 @@
+{
+    "version": "1.0.1",
+    "id": "type3",
+    "name": "3灯式",
+    "view": [
+        {
+            "texture": "texture/3-none.svg"
+        },
+        {
+            "texture": "texture/3-red.svg"
+        },
+        {
+            "texture": "texture/3-yellow.svg"
+        },
+        {
+            "texture": "texture/3-green.svg"
+        }
+    ],
+    "limit": [
+        0,
+        0,
+        45
+    ]
+}

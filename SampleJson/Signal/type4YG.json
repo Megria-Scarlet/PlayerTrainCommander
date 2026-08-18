@@ -1,0 +1,28 @@
+{
+    "version": "1.0.1",
+    "id": "type4-YG",
+    "name": "4灯式 YG",
+    "view": [
+        {
+            "texture": "texture/4-none.svg"
+        },
+        {
+            "texture": "texture/4-red.svg"
+        },
+        {
+            "texture": "texture/4-yellow-1.svg"
+        },
+        {
+            "texture": "texture/4-yellow-green.svg"
+        },
+        {
+            "texture": "texture/4-green-1.svg"
+        }
+    ],
+    "limit": [
+        0,
+        0,
+        45,
+        75
+    ]
+}
