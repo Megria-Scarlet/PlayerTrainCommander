@@ -18,20 +18,23 @@ namespace PTC.Core
         private uint standing;
         private float acceleration;
         private float deceleration;
+        private uint totalLength;
 
         /// <summary>
         /// 値を指定して、新しい <see cref="Train"/> 型のオブジェクトを作成します。
         /// </summary>
         /// <param name="id">固有の ID 。</param>
         /// <param name="name">識別に使用する任意の文字列。</param>
+        /// <param name="totalLength">編成長。</param>
         /// <param name="seating">着席定員数。</param>
         /// <param name="standing">立席定員数。</param>
         /// <param name="acceleration">加速度。(km/h/s)</param>
         /// <param name="deceleration">減速度。(km/h/s)</param>
-        public Train(string id, string? name, uint seating, uint standing, float acceleration, float deceleration)
+        public Train(string id, string? name, uint totalLength, uint seating, uint standing, float acceleration, float deceleration)
         {
             this.id = id;
             this.name = name;
+            this.totalLength = totalLength;
             this.seating = seating;
             this.standing = standing;
             this.acceleration = acceleration;
@@ -116,17 +119,41 @@ namespace PTC.Core
                 string? id = element.GetProperty("id").ToString();
                 if (!element.GetProperty("totallength").TryGetUInt32(out uint totallength))
                     totallength = 0;
-                JsonElement element1 = element.GetProperty("seat");
-                if (!element1.GetProperty("seating").TryGetUInt32(out uint seat))
+                uint seat, stand;
+                if (element.TryGetProperty("seat", out JsonElement element1))
+                {
+                    if (!element1.TryGetProperty("seating", out JsonElement element2) || !element2.TryGetUInt32(out seat))
+                    {
+                        seat = 0;
+                    }
+                    if (!element1.TryGetProperty("standing", out element2) || !element2.TryGetUInt32(out stand))
+                    {
+                        stand = 0;
+                    }
+                }
+                else
+                {
                     seat = 0;
-                if (!element1.GetProperty("standing").TryGetUInt32(out uint stand))
                     stand = 0;
-                element1 = element.GetProperty("performance");
-                if (!element1.GetProperty("acceleration").TryGetSingle(out float acceleration))
+                }
+                float acceleration, deceleration;
+                if (element.TryGetProperty("performance", out element1))
+                {
+                    if (!element1.TryGetProperty("acceleration", out JsonElement element2) || !element2.TryGetSingle(out acceleration))
+                    {
+                        acceleration = 0;
+                    }
+                    if (!element1.TryGetProperty("deceleration", out element2) || !element2.TryGetSingle(out deceleration))
+                    {
+                        deceleration = 0;
+                    }
+                }
+                else
+                {
                     acceleration = 0;
-                if (!element1.GetProperty("deceleration").TryGetSingle(out float deceleration))
                     deceleration = 0;
-                return new Train(id, name, seat, stand, acceleration, deceleration);
+                }
+                return new Train(id, name, totallength, seat, stand, acceleration, deceleration);
             }
             return null;
         }
