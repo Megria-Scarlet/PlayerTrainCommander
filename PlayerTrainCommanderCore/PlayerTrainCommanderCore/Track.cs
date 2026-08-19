@@ -18,8 +18,8 @@ namespace PTC.Core
         /// </summary>
         public struct Linker : IEquatable<Linker>
         {
-            string[]? upIds;
-            string[]? downIds;
+            internal string[]? upIds;
+            internal string[]? downIds;
 
             #region コンストラクタ
             /// <summary>
@@ -128,12 +128,91 @@ namespace PTC.Core
         {
             public override Linker Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                throw new NotImplementedException();
+                if (typeof(Linker) == typeToConvert)
+                {
+                    if (reader.TokenType == JsonTokenType.StartObject)
+                    {
+                        JsonElement element = JsonElement.ParseValue(ref reader);
+                        List<string>? upIds, downIds;
+                        if (element.TryGetProperty("joinupids", out JsonElement element1))
+                        {
+                            upIds = CreateList(element1);
+                        }
+                        else
+                        {
+                            upIds = null;
+                        }
+                        if (element.TryGetProperty("joindownids", out element1))
+                        {
+                            downIds = CreateList(element1);
+                        }
+                        else
+                        {
+                            downIds = null;
+                        }
+#if NET
+                        return new Linker(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(upIds), System.Runtime.InteropServices.CollectionsMarshal.AsSpan(downIds));
+#else
+                        return new Linker(upIds, downIds);
+#endif
+                    }
+                }
+                return default;
             }
 
             public override void Write(Utf8JsonWriter writer, Linker value, JsonSerializerOptions options)
             {
-                throw new NotImplementedException();
+                writer.WriteStartObject();
+                if (value.upIds is not null)
+                {
+                    if (value.upIds.Length == 1)
+                    {
+                        writer.WriteString("joinupids", value.upIds[0]);
+                    }
+                    else
+                    {
+                        writer.WriteStartArray();
+                        foreach (var id in value.upIds)
+                        {
+                            writer.WriteStringValue(id);
+                        }
+                        writer.WriteEndArray();
+                    }
+                }
+                if (value.downIds is not null)
+                {
+                }
+            }
+
+            private static List<string>? CreateList(JsonElement element)
+            {
+                if (element.ValueKind is JsonValueKind.Null)
+                {
+                    return null;
+                }
+                else if (element.ValueKind == JsonValueKind.Array)
+                {
+                    List<string> list = new(element.GetArrayLength() + 4);
+                    JsonElement.ArrayEnumerator enumerator = element.EnumerateArray();
+                    while (enumerator.MoveNext())
+                    {
+                        if (TryGetString(enumerator.Current, out string value))
+                        {
+                            list.Add(value);
+                        }
+                    }
+                    return list.Count > 0 ? list : null;
+                }
+                else
+                {
+                    return TryGetString(element, out string value) ? ([value]) : null;
+                }
+
+                static bool TryGetString(in JsonElement element, out string value)
+                {
+                    value = element.GetString()!;
+                    return !string.IsNullOrWhiteSpace(value);
+                }
             }
         }
     }
