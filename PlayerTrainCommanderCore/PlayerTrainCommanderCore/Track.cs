@@ -11,6 +11,8 @@ namespace PTC.Core
     /// <summary>
     /// 閉そくを管理するクラス。
     /// </summary>
+    [JsonConverter(typeof(TrackJsonConverter))]
+    [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
     public class Track : IInherentObject
     {
         private string id;
@@ -79,6 +81,11 @@ namespace PTC.Core
         public ref readonly Linker Link
         {
             get => ref this.linker;
+        }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        private string GetDebuggerDisplay()
+        {
+            return string.IsNullOrWhiteSpace(id) ? ToString()! : id;
         }
 
         /// <summary>
@@ -319,6 +326,64 @@ namespace PTC.Core
                     value = element.GetString()!;
                     return !string.IsNullOrWhiteSpace(value);
                 }
+            }
+        }
+
+        public ref struct TrackEnumerator : IEnumerator<Track>
+        {
+            private readonly ReadOnlySpan<Track> tracks;
+            private readonly ReadOnlySpan<string> ids;
+            private int _index;
+            private int _trackIndex;
+
+            /// <inheritdoc cref="IEnumerator{T}.Current"/>
+            public readonly ref readonly Track Current
+            {
+                [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+                get => ref tracks[_trackIndex];
+            }
+
+            /// <inheritdoc cref="System.Collections.IEnumerator.MoveNext"/>
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            public bool MoveNext() => TryMoveNext(out _);
+            public bool TryMoveNext(out Track track)
+            {
+                while (_index < ids.Length - 1)
+                {
+                    _index++;
+                    ref readonly string id = ref System.Runtime.CompilerServices.Unsafe.Add(ref System.Runtime.InteropServices.MemoryMarshal.GetReference(ids), _index);
+                    for (int i = 0; i < tracks.Length; i++)
+                    {
+                        var track1 = tracks[i];
+                        if (track1.Id == id)
+                        {
+                            _trackIndex = i;
+                            track = track1;
+                            return true;
+                        }
+                    }
+                }
+                System.Runtime.CompilerServices.Unsafe.SkipInit(out track);
+                return false;
+            }
+            readonly Track IEnumerator<Track>.Current
+            {
+                [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+                get => Current;
+            }
+            readonly object System.Collections.IEnumerator.Current
+            {
+                [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+                get => Current;
+            }
+            readonly void IDisposable.Dispose()
+            {
+
+            }
+            void System.Collections.IEnumerator.Reset()
+            {
+                _index = 0;
+                _trackIndex = 0;
             }
         }
     }
