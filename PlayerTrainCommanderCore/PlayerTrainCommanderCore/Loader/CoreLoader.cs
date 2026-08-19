@@ -13,6 +13,7 @@ namespace PTC.Core.Loader
 
         private StationFile? stationFile;
         private ServiceTypeFile? serviceTypeFile;
+        private Train[] trains;
 
         public CoreLoader(DirectoryInfo rootDirectory)
         {
@@ -29,6 +30,7 @@ namespace PTC.Core.Loader
                 {
                     this.serviceTypeFile = LoadServiceType(directorys, this.stationFile.Stations);
                 }
+                this.trains = LoadTrain(directorys).ToArray();
             }
             catch (Exception ex)
             {
@@ -80,6 +82,25 @@ namespace PTC.Core.Loader
                         using FileStream fileStream = serviceTypeFileInfo.OpenRead();
                         return ServiceTypeFile.FromJson(fileStream, stations);
                     }
+                }
+            }
+            IEnumerable<Train> LoadTrain(List<DirectoryInfo> directorys)
+            {
+                var trainDirectory = directorys.FirstOrDefault(x => x.Name.Equals("Train", StringComparison.InvariantCultureIgnoreCase));
+                if (trainDirectory is null)
+                {
+                    callback.WriteError("The \"Train\" folder is missing.");
+                    return [];
+                }
+                else
+                {
+                    directorys.Remove(trainDirectory);
+                    return trainDirectory.EnumerateFiles("*.json").Select(Load).Where(x => x is not null)!;
+                }
+                static Train? Load(FileInfo fileInfo)
+                {
+                    using FileStream fileStream = fileInfo.OpenRead();
+                    return System.Text.Json.JsonSerializer.Deserialize<Train>(fileStream);
                 }
             }
         }
