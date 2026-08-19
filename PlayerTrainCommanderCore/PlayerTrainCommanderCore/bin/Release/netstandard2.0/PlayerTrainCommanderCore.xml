@@ -15,11 +15,62 @@
             </summary>
             <returns>管理に使用する固有の文字列。</returns>
         </member>
+        <member name="T:PTC.Core.Loader.ILoaderCallback">
+            <summary>
+            読み取り時に発生したメッセージをコールバックする機能を公開します。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.Loader.ILoaderCallback.WriteError(System.String)">
+            <inheritdoc cref="M:PTC.Core.Loader.ILoaderCallback.WriteError(System.String,System.Exception)"/>
+        </member>
+        <member name="M:PTC.Core.Loader.ILoaderCallback.WriteError(System.String,System.Exception)">
+            <summary>
+            エラー文を書き込みます。
+            </summary>
+            <param name="message">エラー文を表す文字列。</param>
+            <param name="exception">例外を示す <see cref="T:System.Exception"/> 型のオブジェクト。</param>
+        </member>
+        <member name="M:PTC.Core.Loader.ILoaderCallback.WriteWarning(System.String)">
+            <summary>
+            警告文を書き込みます。
+            </summary>
+            <param name="message">警告文を表す文字列。</param>
+        </member>
+        <member name="M:PTC.Core.Loader.ILoaderCallback.WriteMessage(System.String)">
+            <summary>
+            メッセージを書き込みます。
+            </summary>
+            <param name="message">メッセージを表す文字列。</param>
+        </member>
+        <member name="M:PTC.Core.Loader.ServiceTypeFile.FromJson(System.IO.Stream,System.Collections.Generic.IEnumerable{PTC.Core.Station},System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            json ファイルのストリームからデータを読み取り、 <see cref="T:PTC.Core.Loader.ServiceTypeFile"/> 型のオブジェクトを取得します。
+            </summary>
+            <param name="utf8Json">json ファイルのストリーム。</param>
+            <param name="stations">駅リスト。</param>
+            <param name="options">デシリアライズに使用するオプション。</param>
+            <returns>json ファイルから読み取られた <see cref="T:PTC.Core.Loader.ServiceTypeFile"/> 型のオブジェクト。</returns>
+        </member>
+        <member name="M:PTC.Core.Loader.ServiceTypeFile.FromJson(System.IO.Stream,System.ReadOnlySpan{PTC.Core.Station},System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc cref="M:PTC.Core.Loader.ServiceTypeFile.FromJson(System.IO.Stream,System.Collections.Generic.IEnumerable{PTC.Core.Station},System.Text.Json.JsonSerializerOptions)"/>
+        </member>
         <member name="M:PTC.Core.Loader.StationFile.GetStationList">
             <summary>
             <see cref="T:PTC.Core.Station"/> 型のオブジェクトを取得します。
             </summary>
             <returns>読み取られた <see cref="T:PTC.Core.Station"/> 型のオブジェクト。</returns>
+        </member>
+        <member name="P:PTC.Core.Loader.StationFile.Stations">
+            <summary>
+            <see cref="T:PTC.Core.Station"/> 型のオブジェクトを取得します。
+            </summary>
+            <returns>読み取られた <see cref="T:PTC.Core.Station"/> 型のオブジェクト。</returns>
+        </member>
+        <member name="P:PTC.Core.Loader.StationFile.Version">
+            <summary>
+            バージョンを示す文字列を取得します。
+            </summary>
+            <returns>バージョンを示す文字列。</returns>
         </member>
         <member name="M:PTC.Core.Loader.StationFile.FromJson(System.IO.Stream,System.Text.Json.JsonSerializerOptions)">
             <summary>
@@ -29,10 +80,117 @@
             <returns>json ファイルから読み取られた <see cref="T:PTC.Core.Loader.StationFile"/> 型のオブジェクト。</returns>
             <param name="options">デシリアライズに使用するオプション。</param>
         </member>
+        <member name="P:PTC.Core.Loader.TrackFile.Tracks">
+            <summary>
+            <see cref="T:PTC.Core.Track"/> 型のオブジェクトを取得します。
+            </summary>
+            <returns>読み取られた <see cref="T:PTC.Core.Track"/> 型のオブジェクト。</returns>
+        </member>
+        <member name="P:PTC.Core.Loader.TrackFile.Version">
+            <summary>
+            バージョンを示す文字列を取得します。
+            </summary>
+            <returns>バージョンを示す文字列。</returns>
+        </member>
+        <member name="M:PTC.Core.Loader.TrackFile.FromJson(System.IO.Stream,System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            json ファイルのストリームからデータを読み取り、 <see cref="T:PTC.Core.Loader.TrackFile"/> 型のオブジェクトを取得します。
+            </summary>
+            <param name="utf8Json">json ファイルのストリーム。</param>
+            <returns>json ファイルから読み取られた <see cref="T:PTC.Core.Loader.TrackFile"/> 型のオブジェクト。</returns>
+            <param name="options">デシリアライズに使用するオプション。</param>
+        </member>
+        <member name="T:PTC.Core.JsonObjectEnumerator">
+            <summary>
+            <see cref="T:System.Text.Json.Utf8JsonReader"/> から <see cref="T:System.Object"/> 型を列挙する構造体。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.JsonObjectEnumerator.#ctor(System.Text.Json.Utf8JsonReader)">
+            <summary>
+            <see cref="T:System.Text.Json.Utf8JsonReader"/> から <see cref="T:System.Object"/> 型を列挙するオブジェクトを作成します。
+            </summary>
+            <param name="reader"><see cref="T:System.Text.Json.Utf8JsonReader"/> 型のオブジェクト。</param>
+            <remarks>現在の <see cref="P:System.Text.Json.Utf8JsonReader.TokenType"/> は <see cref="F:System.Text.Json.JsonTokenType.StartObject"/> を示している必要があります。</remarks>
+        </member>
+        <member name="M:PTC.Core.JsonObjectEnumerator.MoveNext">
+            <summary>
+            列挙子をコレクションの次の要素に進めます。
+            </summary>
+            <returns>列挙子が次の要素に正常に進んだ場合は <see langword="true"/>。列挙子がコレクションの末尾を越えた場合は <see langword="false"/>。</returns>
+            <exception cref="T:System.Text.Json.JsonException"></exception>
+        </member>
+        <member name="P:PTC.Core.JsonObjectEnumerator.Current">
+            <summary>
+            列挙子の現在位置にある文字列を取得します。
+            </summary>
+            <returns>列挙子の現在位置にある文字列。</returns>
+        </member>
+        <member name="P:PTC.Core.JsonObjectEnumerator.Reader">
+            <inheritdoc cref="P:PTC.Core.JsonStringArrayEnumerator.Reader"/>
+        </member>
+        <member name="T:PTC.Core.JsonStringArrayEnumerator">
+            <summary>
+            <see cref="T:System.Text.Json.Utf8JsonReader"/> から <see cref="T:System.String"/> 型の配列を列挙する構造体。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.JsonStringArrayEnumerator.#ctor(System.Text.Json.Utf8JsonReader)">
+            <summary>
+            <see cref="T:System.Text.Json.Utf8JsonReader"/> から <see cref="T:System.String"/> 型の配列を列挙するオブジェクトを作成します。
+            </summary>
+            <param name="reader"><see cref="T:System.Text.Json.Utf8JsonReader"/> 型のオブジェクト。</param>
+            <remarks>現在の <see cref="P:System.Text.Json.Utf8JsonReader.TokenType"/> は <see cref="F:System.Text.Json.JsonTokenType.StartArray"/> を示している必要があります。</remarks>
+        </member>
+        <member name="P:PTC.Core.JsonStringArrayEnumerator.Current">
+            <summary>
+            列挙子の現在位置にある文字列を取得します。
+            </summary>
+            <returns>列挙子の現在位置にある文字列。</returns>
+        </member>
+        <member name="M:PTC.Core.JsonStringArrayEnumerator.MoveNext">
+            <summary>
+            列挙子をコレクションの次の要素に進めます。
+            </summary>
+            <returns>列挙子が次の要素に正常に進んだ場合は <see langword="true"/>。列挙子がコレクションの末尾を越えた場合は <see langword="false"/>。</returns>
+            <exception cref="T:System.Text.Json.JsonException"></exception>
+        </member>
+        <member name="T:PTC.Core.ServiceTypeJsonConverter">
+            <summary>
+            <see cref="T:PTC.Core.ServiceType"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.ServiceTypeJsonConverter.#ctor(System.Collections.Generic.IEnumerable{PTC.Core.Station})">
+            <summary>
+            <see cref="T:PTC.Core.Station"/> コレクションを指定して、新しい <see cref="T:PTC.Core.ServiceTypeJsonConverter"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="stations"><see cref="T:PTC.Core.Station"/> コレクション。</param>
+        </member>
+        <member name="M:PTC.Core.ServiceTypeJsonConverter.#ctor(System.ReadOnlySpan{PTC.Core.Station})">
+            <inheritdoc cref="M:PTC.Core.ServiceTypeJsonConverter.#ctor(System.Collections.Generic.IEnumerable{PTC.Core.Station})"/>
+        </member>
+        <member name="M:PTC.Core.ServiceTypeJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
         <member name="T:PTC.Core.StationJsonConverter">
             <summary>
             <see cref="T:PTC.Core.Station"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
             </summary>
+        </member>
+        <member name="M:PTC.Core.StationJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:PTC.Core.StationJsonConverter.Write(System.Text.Json.Utf8JsonWriter,PTC.Core.Station,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:PTC.Core.TrackJsonConverter">
+            <summary>
+            <see cref="T:PTC.Core.Track"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.TrackJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:PTC.Core.TrackJsonConverter.Write(System.Text.Json.Utf8JsonWriter,PTC.Core.Track,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
         </member>
         <member name="T:PTC.Core.ServiceType">
             <summary>
@@ -72,6 +230,38 @@
             </summary>
             <returns>停車駅を示す読み取り専用のスパン。</returns>
         </member>
+        <member name="T:PTC.Core.Signal101">
+            <summary>
+            信号を定義します。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.Signal101.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{PTC.Core.Signal101.View},System.Collections.Generic.IEnumerable{System.UInt32})">
+            <summary>
+            値を指定して、新しい <see cref="T:PTC.Core.Signal101"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="id">固有の ID 。</param>
+            <param name="name">識別に使用する任意の文字列。</param>
+            <param name="views"></param>
+            <param name="speedLimits"></param>
+        </member>
+        <member name="P:PTC.Core.Signal101.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:PTC.Core.Signal101.Name">
+            <inheritdoc cref="P:PTC.Core.Station.Name"/>
+        </member>
+        <member name="P:PTC.Core.Signal101.SpeedLimits">
+            <summary>
+            速度制限を格納する読み取り専用のスパンを取得します。
+            </summary>
+            <returns>速度制限を格納する読み取り専用のスパン。</returns>
+        </member>
+        <member name="P:PTC.Core.Signal101.View.TexturePath">
+            <summary>
+            画像ファイルパスを取得します。
+            </summary>
+            <returns>相対画像ファイルパス。</returns>
+        </member>
         <member name="T:PTC.Core.Station">
             <summary>
             駅情報を管理するクラス。
@@ -109,6 +299,267 @@
             許容乗客数を取得します。
             </summary>
             <returns>許容乗客数を表す 32 ビット符号なし整数。</returns>
+        </member>
+        <member name="T:PTC.Core.Track">
+            <summary>
+            閉そくを管理するクラス。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.Track.#ctor(System.String,System.String,System.UInt32,System.UInt32,PTC.Core.Track.Linker)">
+            <summary>
+            値を指定して、新しい <see cref="T:PTC.Core.Track"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="id">固有の ID 。</param>
+            <param name="type">閉そくの種類を示す文字列。</param>
+            <param name="length">閉そくの長さ (m) 。</param>
+            <param name="speedLimit">閉そくの制限速度 (km/h) 。</param>
+            <param name="linker">閉そくの接続先。</param>
+        </member>
+        <member name="P:PTC.Core.Track.Id">
+            <summary>
+            管理に使用する固有の文字列を取得します。
+            </summary>
+            <returns>管理に使用する固有の文字列。</returns>
+        </member>
+        <member name="P:PTC.Core.Track.TrackType">
+            <summary>
+            閉そくの種類を示す文字列を取得します。
+            </summary>
+            <returns>閉そくの種類を示す文字列。</returns>
+        </member>
+        <member name="P:PTC.Core.Track.Length">
+            <summary>
+            閉そくの長さ (m) を取得します。
+            </summary>
+            <returns>閉そくの長さ (m) を示す 32 ビット符号なし整数。</returns>
+        </member>
+        <member name="P:PTC.Core.Track.SpeedLimit">
+            <summary>
+            閉そくの制限速度 (km/h) を取得します。
+            </summary>
+            <returns>閉そくの制限速度 (km/h) を示す 32 ビット符号なし整数。</returns>
+        </member>
+        <member name="P:PTC.Core.Track.Link">
+            <summary>
+            閉そくの接続先を示す <see cref="T:PTC.Core.Track.Linker"/> 型のオブジェクトを取得します。
+            </summary>
+            <returns>閉そくの接続先を示す <see cref="T:PTC.Core.Track.Linker"/> 型のオブジェクトの読み取り専用の参照。</returns>
+        </member>
+        <member name="M:PTC.Core.Track.GetNextTrack(System.Boolean,System.ReadOnlySpan{PTC.Core.Track})">
+            <inheritdoc cref="M:PTC.Core.Track.Linker.GetNextTrack(System.Boolean,System.ReadOnlySpan{PTC.Core.Track})"/>
+        </member>
+        <member name="M:PTC.Core.Track.GetNextTrack(System.Boolean,System.Collections.Generic.IEnumerable{PTC.Core.Track})">
+            <inheritdoc cref="M:PTC.Core.Track.Linker.GetNextTrack(System.Boolean,System.Collections.Generic.IEnumerable{PTC.Core.Track})"/>
+        </member>
+        <member name="T:PTC.Core.Track.Linker">
+            <summary>
+            上り方面と下り方面の接続先を管理する基本的なクラス。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.Track.Linker.#ctor(System.String[],System.String[])">
+            <summary>
+            上り方面と下り方面の接続先を示す文字列型の配列を指定して、新しい <see cref="T:PTC.Core.Track.Linker"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="upIds">上り方面の接続先を示す文字列型の配列。</param>
+            <param name="downIds">下り方面の接続先を示す文字列型の配列。</param>
+            <remarks>
+            指定した配列をシャローコピーした配列を内部で使用します。
+            </remarks>
+        </member>
+        <member name="M:PTC.Core.Track.Linker.#ctor(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            上り方面と下り方面の接続先を示す文字列型のコレクションを指定して、新しい <see cref="T:PTC.Core.Track.Linker"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="upIds">上り方面の接続先を示す文字列型のコレクション。</param>
+            <param name="downIds">下り方面の接続先を示す文字列型のコレクション。</param>
+        </member>
+        <member name="M:PTC.Core.Track.Linker.#ctor(System.ReadOnlySpan{System.String},System.ReadOnlySpan{System.String})">
+            <summary>
+            上り方面と下り方面の接続先を示す文字列型のスパンを指定して、新しい <see cref="T:PTC.Core.Track.Linker"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="upIds">上り方面の接続先を示す文字列型のスパン。</param>
+            <param name="downIds">下り方面の接続先を示す文字列型のスパン。</param>
+        </member>
+        <member name="P:PTC.Core.Track.Linker.UpIds">
+            <summary>
+            上り方面の接続先を示す文字列型の読み取り専用のスパンを取得します。
+            </summary>
+            <returns>上り方面の接続先を示す文字列型の読み取り専用のスパン。</returns>
+        </member>
+        <member name="P:PTC.Core.Track.Linker.DownIds">
+            <summary>
+            下り方面の接続先を示す文字列型の読み取り専用のスパンを取得します。
+            </summary>
+            <returns>下り方面の接続先を示す文字列型の読み取り専用のスパン。</returns>
+        </member>
+        <member name="M:PTC.Core.Track.Linker.GetNextTrack(System.Boolean,System.ReadOnlySpan{PTC.Core.Track})">
+            <summary>
+            次の閉そくを取得します。
+            </summary>
+            <param name="direction"><see langword="true"/> の場合は上り方面、 <see langword="false"/> の場合は下り方面</param>
+            <param name="tracks">検索する <see cref="T:PTC.Core.Track"/> 型のオブジェクトを格納する読み取り専用のスパン。</param>
+            <returns>次の閉そくを列挙するオブジェクト。</returns>
+        </member>
+        <member name="M:PTC.Core.Track.Linker.GetNextTrack(System.Boolean,System.Collections.Generic.IEnumerable{PTC.Core.Track})">
+            <summary>
+            次の閉そくを取得します。
+            </summary>
+            <param name="direction"><see langword="true"/> の場合は上り方面、 <see langword="false"/> の場合は下り方面</param>
+            <param name="tracks">検索する <see cref="T:PTC.Core.Track"/> 型のオブジェクトを列挙するオブジェクト。</param>
+            <returns>次の閉そくを列挙するオブジェクト。</returns>
+        </member>
+        <member name="M:PTC.Core.Track.Linker.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:PTC.Core.Track.Linker.Equals(PTC.Core.Track.Linker)">
+            <inheritdoc/>
+        </member>
+        <member name="M:PTC.Core.Track.Linker.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:PTC.Core.Track.LinkerJsonConverter">
+            <summary>
+            <see cref="T:PTC.Core.Track.Linker"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.Track.LinkerJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:PTC.Core.Track.LinkerJsonConverter.Write(System.Text.Json.Utf8JsonWriter,PTC.Core.Track.Linker,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:PTC.Core.Track.TrackEnumerator">
+            <summary>
+            文字列 Id に一致する <see cref="T:PTC.Core.Track"/> 型のオブジェクトを列挙する構造体。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.Track.TrackEnumerator.#ctor(System.ReadOnlySpan{PTC.Core.Track},System.ReadOnlySpan{System.String})">
+            <summary>
+            値を指定して、新しい <see cref="T:PTC.Core.Track.TrackEnumerator"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="tracks"><see cref="T:PTC.Core.Track"/> 型のオブジェクトを格納する読み取り専用のスパン。</param>
+            <param name="ids">Id を示す文字列を格納する読み取り専用のスパン。</param>
+        </member>
+        <member name="P:PTC.Core.Track.TrackEnumerator.Current">
+            <inheritdoc cref="P:System.Collections.Generic.IEnumerator`1.Current"/>
+        </member>
+        <member name="M:PTC.Core.Track.TrackEnumerator.MoveNext">
+            <inheritdoc cref="M:System.Collections.IEnumerator.MoveNext"/>
+        </member>
+        <member name="M:PTC.Core.Track.TrackEnumerator.TryMoveNext(PTC.Core.Track@)">
+            <summary>
+            列挙子を次の要素に進め、現在の要素を取得します。
+            </summary>
+            <param name="track">現在の要素。</param>
+            <returns>列挙子が次の要素に正常に進んだ場合は <see langword="true"/> 、それ以外の場合は <see langword="false"/> 。</returns>
+        </member>
+        <member name="T:PTC.Core.BranchingTrack">
+            <summary>
+            分岐器を保有する閉そくを管理するクラス。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.BranchingTrack.TrackTypeName">
+            <summary>
+            閉そくの種類を示す既定の文字列。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.BranchingTrack.#ctor(System.String,System.String,System.UInt32,System.UInt32,PTC.Core.Track.Linker)">
+            <summary>
+            値を指定して、新しい <see cref="T:PTC.Core.BranchingTrack"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="id">固有の ID 。</param>
+            <param name="type">閉そくの種類を示す文字列。</param>
+            <param name="length">閉そくの長さ (m) 。</param>
+            <param name="speedLimit">閉そくの制限速度 (km/h) 。</param>
+            <param name="linker">閉そくの接続先。</param>
+        </member>
+        <member name="M:PTC.Core.BranchingTrack.#ctor(System.String,System.UInt32,System.UInt32,PTC.Core.Track.Linker)">
+            <summary>
+            値を指定して、新しい <see cref="T:PTC.Core.BranchingTrack"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="id">固有の ID 。</param>
+            <param name="length">閉そくの長さ (m) 。</param>
+            <param name="speedLimit">閉そくの制限速度 (km/h) 。</param>
+            <param name="linker">閉そくの接続先。</param>
+        </member>
+        <member name="T:PTC.Core.Train">
+            <summary>
+            編成データを定義するクラス。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.Train.#ctor(System.String,System.String,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.Single,System.Single)">
+            <summary>
+            値を指定して、新しい <see cref="T:PTC.Core.Train"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="id">固有の ID 。</param>
+            <param name="name">識別に使用する任意の文字列。</param>
+            <param name="totalLength">編成長。(mm)</param>
+            <param name="carCount">両数。</param>
+            <param name="seating">着席定員数。</param>
+            <param name="standing">立席定員数。</param>
+            <param name="acceleration">加速度。(km/h/s)</param>
+            <param name="deceleration">減速度。(km/h/s)</param>
+        </member>
+        <member name="P:PTC.Core.Train.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:PTC.Core.Train.Name">
+            <inheritdoc cref="P:PTC.Core.Station.Name"/>
+        </member>
+        <member name="P:PTC.Core.Train.SeatCapacity">
+            <summary>
+            着席定員数を取得します。
+            </summary>
+            <returns>着席定員数を示す 32 ビット符号なし整数。</returns>
+        </member>
+        <member name="P:PTC.Core.Train.StandCapacity">
+            <summary>
+            立席定員数を取得します。
+            </summary>
+            <returns>立席定員数を示す 32 ビット符号なし整数。</returns>
+        </member>
+        <member name="P:PTC.Core.Train.Acceleration">
+            <summary>
+            加速度 (km/h/s) を取得します。
+            </summary>
+            <returns>加速度 (km/h/s) を示す単精度浮動小数点数。</returns>
+        </member>
+        <member name="P:PTC.Core.Train.Deceleration">
+            <summary>
+            減速度 (km/h/s) を取得します。
+            </summary>
+            <returns>減速度 (km/h/s) を示す単精度浮動小数点数。</returns>
+        </member>
+        <member name="P:PTC.Core.Train.TotalLength">
+            <summary>
+            編成長 (mm) を取得します。
+            </summary>
+            <returns>編成長 (mm) を示す 32 ビット符号なし整数。</returns>
+        </member>
+        <member name="P:PTC.Core.Train.CarCount">
+            <summary>
+            編成両数を取得します。
+            </summary>
+            <returns>編成両数を示す 32 ビット符号なし整数。</returns>
+        </member>
+        <member name="M:PTC.Core.Train.FromJson(System.IO.Stream,System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            json ファイルのストリームからデータを読み取り、 <see cref="T:PTC.Core.Train"/> 型のオブジェクトを取得します。
+            </summary>
+            <param name="utf8Json">json ファイルのストリーム。</param>
+            <returns>json ファイルから読み取られた <see cref="T:PTC.Core.Train"/> 型のオブジェクト。</returns>
+            <param name="options">デシリアライズに使用するオプション。</param>
+        </member>
+        <member name="T:PTC.Core.TrainJsonConverter">
+            <summary>
+            <see cref="T:PTC.Core.Train"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.TrainJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:PTC.Core.TrainJsonConverter.Write(System.Text.Json.Utf8JsonWriter,PTC.Core.Train,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
         </member>
     </members>
 </doc>
