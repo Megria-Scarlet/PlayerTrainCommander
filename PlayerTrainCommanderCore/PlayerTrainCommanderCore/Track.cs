@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace PTC.Core
 {
-    internal class Track
+    /// <summary>
+    /// 線路を管理するクラス。
+    /// </summary>
+    public class Track
     {
     }
 }
