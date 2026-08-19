@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace PTC.Core
 {
     /// <summary>
-    /// 線路を管理するクラス。
+    /// 閉そくを管理するクラス。
     /// </summary>
     public class Track : IInherentObject
     {
@@ -17,13 +17,23 @@ namespace PTC.Core
         private string type;
         private uint length;
         private uint speedLimit;
+        private Linker linker;
 
-        public Track(string id, string type, uint length, uint speedLimit)
+        /// <summary>
+        /// 値を指定して、新しい <see cref="Track"/> 型のオブジェクトを作成します。
+        /// </summary>
+        /// <param name="id">固有の ID 。</param>
+        /// <param name="type">閉そくの種類を示す文字列。</param>
+        /// <param name="length">閉そくの長さ (m) 。</param>
+        /// <param name="speedLimit">閉そくの制限速度 (km/h) 。</param>
+        /// <param name="linker">閉そくの接続先。</param>
+        public Track(string id, string type, uint length, uint speedLimit, Linker linker)
         {
             this.id = id;
             this.type = type;
             this.length = length;
             this.speedLimit = speedLimit;
+            this.linker = linker;
         }
 
         /// <summary>
@@ -35,20 +45,40 @@ namespace PTC.Core
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get => this.id;
         }
+        /// <summary>
+        /// 閉そくの種類を示す文字列を取得します。
+        /// </summary>
+        /// <returns>閉そくの種類を示す文字列。</returns>
         public string TrackType
         {
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get => this.type;
         }
+        /// <summary>
+        /// 閉そくの長さ (m) を取得します。
+        /// </summary>
+        /// <returns>閉そくの長さ (m) を示す 32 ビット符号なし整数。</returns>
         public uint Length
         {
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get => this.length;
         }
+        /// <summary>
+        /// 閉そくの制限速度 (km/h) を取得します。
+        /// </summary>
+        /// <returns>閉そくの制限速度 (km/h) を示す 32 ビット符号なし整数。</returns>
         public uint SpeedLimit
         {
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get => this.speedLimit;
+        }
+        /// <summary>
+        /// 閉そくの接続先を示す <see cref="Linker"/> 型のオブジェクトを取得します。
+        /// </summary>
+        /// <returns>閉そくの接続先を示す <see cref="Linker"/> 型のオブジェクトの読み取り専用の参照。</returns>
+        public ref readonly Linker Link
+        {
+            get => ref this.linker;
         }
 
         /// <summary>
