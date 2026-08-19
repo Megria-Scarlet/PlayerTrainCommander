@@ -35,95 +35,36 @@ namespace View
                 System.IO.DirectoryInfo directoryInfo = new(path);
                 if (directoryInfo.Exists)
                 {
-                    var list = directoryInfo.GetDirectories().ToList();
-                    var staitonInfo = list.FirstOrDefault(x => x.Name.Equals("station", StringComparison.InvariantCultureIgnoreCase));
-                    if (staitonInfo is null)
-                    {
-                        string msg = "staiton フォルダーがありません。";
-                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    var stationFileInfo = staitonInfo.EnumerateFiles().FirstOrDefault(x => x.Name.Equals("station.json", StringComparison.InvariantCultureIgnoreCase));
-                    if (stationFileInfo is null)
-                    {
-                        string msg = "station.json ファイルがありません。";
-                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    PTC.Core.Loader.StationFile stationFile;
-                    {
-                        using System.IO.FileStream fileStream = stationFileInfo.OpenRead();
-
-                        JsonSerializerOptions serializerOptions = new JsonSerializerOptions();
-                        serializerOptions.Converters.Add(new PTC.Core.StationJsonConverter());
-                        serializerOptions.Converters.Add(new PTC.Core.Loader.StationFileJsonConverter());
-                        serializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All);
-
-                        stationFile = PTC.Core.Loader.StationFile.FromJson(fileStream, serializerOptions)!;
-                    }
-
-                    var serviceTypeInfo = directoryInfo.EnumerateDirectories().FirstOrDefault(x => x.Name.Equals("ServiceType", StringComparison.InvariantCultureIgnoreCase));
-                    if (serviceTypeInfo is null)
-                    {
-                        string msg = "ServiceType フォルダーがありません。";
-                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    var serviceTypeFileInfo = serviceTypeInfo.EnumerateFiles().FirstOrDefault(x => x.Name.Equals("ServiceType.json", StringComparison.InvariantCultureIgnoreCase));
-                    if (serviceTypeFileInfo is null)
-                    {
-                        string msg = "ServiceType.json ファイルがありません。";
-                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    PTC.Core.Loader.ServiceTypeFile serviceTypeFile;
-                    {
-                        using System.IO.FileStream fileStream = serviceTypeFileInfo.OpenRead();
-                        serviceTypeFile = PTC.Core.Loader.ServiceTypeFile.FromJson(fileStream, stationFile.Stations)!;
-                        _ = serviceTypeFile;
-                    }
-
-                    var trainInfo = directoryInfo.EnumerateDirectories().FirstOrDefault(x => x.Name.Equals("Train", StringComparison.InvariantCultureIgnoreCase));
-                    if (trainInfo is null)
-                    {
-                        string msg = "Train フォルダーがありません。";
-                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    foreach (var trainTile in trainInfo.EnumerateFiles())
-                    {
-                        using System.IO.FileStream fileStream = trainTile.OpenRead();
-                        var t = JsonSerializer.Deserialize<PTC.Core.Train>(fileStream);
-                        _ = t;
-                    }
-
-                    var trackInfo = directoryInfo.EnumerateDirectories().FirstOrDefault(x => x.Name.Equals("Track", StringComparison.InvariantCultureIgnoreCase));
-                    if (trackInfo is null)
-                    {
-                        string msg = "Track フォルダーがありません。";
-                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    var trackFileInfo = trackInfo.EnumerateFiles().FirstOrDefault(x => x.Name.Equals("Track.json", StringComparison.InvariantCultureIgnoreCase));
-                    if (trackFileInfo is null)
-                    {
-                        string msg = "Track.json ファイルがありません。";
-                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    PTC.Core.Loader.TrackFile trackFile;
-                    {
-                        using System.IO.FileStream fileStream = trackFileInfo.OpenRead();
-                        trackFile = PTC.Core.Loader.TrackFile.FromJson(fileStream)!;
-                        _ = trackFile;
-                    }
-
+                    PTC.Core.Loader.CoreLoader loader = new(directoryInfo);
+                    loader.Load(new MessageBoxCallback());
 
                     foreach (string p in System.IO.Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories))
                     {
                         Debug.WriteLine(p);
                     }
                 }
+            }
+        }
+        private struct MessageBoxCallback : PTC.Core.Loader.ILoaderCallback
+        {
+            public readonly void WriteError(string message)
+            {
+                MessageBox.Show(message, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            public readonly void WriteError(string message, Exception exception)
+            {
+                MessageBox.Show(exception.Message, $"{exception.GetType()} エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            public readonly void WriteMessage(string message)
+            {
+                MessageBox.Show(message, string.Empty, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            public readonly void WriteWarning(string message)
+            {
+                MessageBox.Show(message, "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
     }
