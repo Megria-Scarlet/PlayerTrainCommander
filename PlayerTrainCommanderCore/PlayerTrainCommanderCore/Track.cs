@@ -14,10 +14,16 @@ namespace PTC.Core
     public class Track : IInherentObject
     {
         private string id;
+        private string type;
+        private uint length;
+        private uint speedLimit;
 
-        public Track(string id)
+        public Track(string id, string type, uint length, uint speedLimit)
         {
             this.id = id;
+            this.type = type;
+            this.length = length;
+            this.speedLimit = speedLimit;
         }
 
         /// <summary>
@@ -28,6 +34,21 @@ namespace PTC.Core
         {
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get => this.id;
+        }
+        public string TrackType
+        {
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => this.type;
+        }
+        public uint Length
+        {
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => this.length;
+        }
+        public uint SpeedLimit
+        {
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => this.speedLimit;
         }
 
         /// <summary>
