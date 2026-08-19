@@ -165,13 +165,14 @@ namespace PTC.Core
                 writer.WriteStartObject();
                 if (value.upIds is not null)
                 {
+                    const string name = "joinupids";
                     if (value.upIds.Length == 1)
                     {
-                        writer.WriteString("joinupids", value.upIds[0]);
+                        writer.WriteString(name, value.upIds[0]);
                     }
                     else
                     {
-                        writer.WriteStartArray();
+                        writer.WriteStartArray(name);
                         foreach (var id in value.upIds)
                         {
                             writer.WriteStringValue(id);
@@ -181,6 +182,20 @@ namespace PTC.Core
                 }
                 if (value.downIds is not null)
                 {
+                    const string name = "joindownids";
+                    if (value.downIds.Length == 1)
+                    {
+                        writer.WriteString(name, value.downIds[0]);
+                    }
+                    else
+                    {
+                        writer.WriteStartArray(name);
+                        foreach (var id in value.downIds)
+                        {
+                            writer.WriteStringValue(id);
+                        }
+                        writer.WriteEndArray();
+                    }
                 }
             }
 
