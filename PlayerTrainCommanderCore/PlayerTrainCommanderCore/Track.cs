@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace PTC.Core
@@ -120,6 +122,19 @@ namespace PTC.Core
                 return !left.Equals(right);
             }
 #pragma warning restore CS1591 // 公開されている型またはメンバーの XML コメントがありません
+        }
+
+        public class LinkerJsonConverter : JsonConverter<Linker>
+        {
+            public override Linker Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void Write(Utf8JsonWriter writer, Linker value, JsonSerializerOptions options)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }
