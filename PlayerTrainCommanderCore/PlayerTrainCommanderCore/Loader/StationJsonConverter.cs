@@ -9,6 +9,7 @@ namespace PTC.Core
     /// </summary>
     public class StationJsonConverter : JsonConverter<Station>
     {
+        /// <inheritdoc/>
         public override Station? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (typeof(Station).IsAssignableFrom(typeToConvert))
@@ -81,6 +82,7 @@ namespace PTC.Core
             return null;
         }
 
+        /// <inheritdoc/>
         public override void Write(Utf8JsonWriter writer, Station value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
