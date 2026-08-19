@@ -113,7 +113,7 @@ namespace View
                     }
                     PTC.Core.Loader.TrackFile trackFile;
                     {
-                        using System.IO.FileStream fileStream = serviceTypeFileInfo.OpenRead();
+                        using System.IO.FileStream fileStream = trackFileInfo.OpenRead();
                         trackFile = PTC.Core.Loader.TrackFile.FromJson(fileStream)!;
                         _ = trackFile;
                     }
