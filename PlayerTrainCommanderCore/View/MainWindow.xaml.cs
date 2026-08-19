@@ -97,6 +97,26 @@ namespace View
                         _ = t;
                     }
 
+                    var trackInfo = directoryInfo.EnumerateDirectories().FirstOrDefault(x => x.Name.Equals("Track", StringComparison.InvariantCultureIgnoreCase));
+                    if (trackInfo is null)
+                    {
+                        string msg = "Track フォルダーがありません。";
+                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    var trackFileInfo = trackInfo.EnumerateFiles().FirstOrDefault(x => x.Name.Equals("Track.json", StringComparison.InvariantCultureIgnoreCase));
+                    if (trackFileInfo is null)
+                    {
+                        string msg = "Track.json ファイルがありません。";
+                        MessageBox.Show(msg, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    PTC.Core.Loader.TrackFile trackFile;
+                    {
+                        using System.IO.FileStream fileStream = serviceTypeFileInfo.OpenRead();
+                        trackFile = PTC.Core.Loader.TrackFile.FromJson(fileStream)!;
+                        _ = trackFile;
+                    }
 
 
                     foreach (string p in System.IO.Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories))
