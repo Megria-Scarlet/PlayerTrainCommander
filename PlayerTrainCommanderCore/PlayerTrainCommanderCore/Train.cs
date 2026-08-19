@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace PTC.Core
 {
     /// <summary>
-    /// 車両データを定義するクラス。
+    /// 編成データを定義するクラス。
     /// </summary>
     [JsonConverter(typeof(TrainJsonConverter))]
     public class Train : IInherentObject
@@ -19,18 +19,20 @@ namespace PTC.Core
         private float acceleration;
         private float deceleration;
         private uint totalLength;
+        private uint carCount;
 
         /// <summary>
         /// 値を指定して、新しい <see cref="Train"/> 型のオブジェクトを作成します。
         /// </summary>
         /// <param name="id">固有の ID 。</param>
         /// <param name="name">識別に使用する任意の文字列。</param>
-        /// <param name="totalLength">編成長。</param>
+        /// <param name="totalLength">編成長。(mm)</param>
+        /// <param name="carCount">両数。</param>
         /// <param name="seating">着席定員数。</param>
         /// <param name="standing">立席定員数。</param>
         /// <param name="acceleration">加速度。(km/h/s)</param>
         /// <param name="deceleration">減速度。(km/h/s)</param>
-        public Train(string id, string? name, uint totalLength, uint seating, uint standing, float acceleration, float deceleration)
+        public Train(string id, string? name, uint totalLength, uint carCount, uint seating, uint standing, float acceleration, float deceleration)
         {
             this.id = id;
             this.name = name;
@@ -39,6 +41,7 @@ namespace PTC.Core
             this.standing = standing;
             this.acceleration = acceleration;
             this.deceleration = deceleration;
+            this.carCount = carCount;
         }
 
         /// <inheritdoc/>
@@ -92,6 +95,25 @@ namespace PTC.Core
         }
 
         /// <summary>
+        /// 編成長 (mm) を取得します。
+        /// </summary>
+        /// <returns>編成長 (mm) を示す 32 ビット符号なし整数。</returns>
+        public uint TotalLength
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => totalLength;
+        }
+        /// <summary>
+        /// 編成両数を取得します。
+        /// </summary>
+        /// <returns>編成両数を示す 32 ビット符号なし整数。</returns>
+        public uint CarCount
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => carCount;
+        }
+
+        /// <summary>
         /// json ファイルのストリームからデータを読み取り、 <see cref="Train"/> 型のオブジェクトを取得します。
         /// </summary>
         /// <param name="utf8Json">json ファイルのストリーム。</param>
@@ -114,46 +136,53 @@ namespace PTC.Core
             if (typeof(Train).IsAssignableFrom(typeToConvert))
             {
                 JsonElement element = JsonElement.ParseValue(ref reader);
-                string ver = element.GetProperty("version").ToString();
-                string? name = element.GetProperty("name").ToString();
-                string? id = element.GetProperty("id").ToString();
-                if (!element.GetProperty("totallength").TryGetUInt32(out uint totallength))
-                    totallength = 0;
-                uint seat, stand;
-                if (element.TryGetProperty("seat", out JsonElement element1))
+                string? ver;
+
+                if (element.TryGetProperty("version", out JsonElement element1) && (ver = element1.GetString()) == "1.0.1")
                 {
-                    if (!element1.TryGetProperty("seating", out JsonElement element2) || !element2.TryGetUInt32(out seat))
+                    string? name = element.GetProperty("name").ToString();
+                    string? id = element.GetProperty("id").ToString();
+
+                    if (!element.TryGetProperty("totallength", out element1) || !element1.TryGetUInt32(out uint totallength))
+                        totallength = 0;
+                    if (!element.TryGetProperty("cars", out element1) || !element1.TryGetUInt32(out uint cars))
+                        cars = 0;
+                    uint seat, stand;
+                    if (element.TryGetProperty("seat", out element1))
+                    {
+                        if (!element1.TryGetProperty("seating", out JsonElement element2) || !element2.TryGetUInt32(out seat))
+                        {
+                            seat = 0;
+                        }
+                        if (!element1.TryGetProperty("standing", out element2) || !element2.TryGetUInt32(out stand))
+                        {
+                            stand = 0;
+                        }
+                    }
+                    else
                     {
                         seat = 0;
-                    }
-                    if (!element1.TryGetProperty("standing", out element2) || !element2.TryGetUInt32(out stand))
-                    {
                         stand = 0;
                     }
-                }
-                else
-                {
-                    seat = 0;
-                    stand = 0;
-                }
-                float acceleration, deceleration;
-                if (element.TryGetProperty("performance", out element1))
-                {
-                    if (!element1.TryGetProperty("acceleration", out JsonElement element2) || !element2.TryGetSingle(out acceleration))
+                    float acceleration, deceleration;
+                    if (element.TryGetProperty("performance", out element1))
+                    {
+                        if (!element1.TryGetProperty("acceleration", out JsonElement element2) || !element2.TryGetSingle(out acceleration))
+                        {
+                            acceleration = 0;
+                        }
+                        if (!element1.TryGetProperty("deceleration", out element2) || !element2.TryGetSingle(out deceleration))
+                        {
+                            deceleration = 0;
+                        }
+                    }
+                    else
                     {
                         acceleration = 0;
-                    }
-                    if (!element1.TryGetProperty("deceleration", out element2) || !element2.TryGetSingle(out deceleration))
-                    {
                         deceleration = 0;
                     }
+                    return new Train(id, name, totallength, cars, seat, stand, acceleration, deceleration);
                 }
-                else
-                {
-                    acceleration = 0;
-                    deceleration = 0;
-                }
-                return new Train(id, name, totallength, seat, stand, acceleration, deceleration);
             }
             return null;
         }
