@@ -37,6 +37,7 @@ namespace View
                 {
                     PTC.Core.Loader.CoreLoader loader = new(directoryInfo);
                     loader.Load(new MessageBoxCallback());
+                    _ = loader;
 
                     foreach (string p in System.IO.Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories))
                     {
