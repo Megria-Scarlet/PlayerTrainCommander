@@ -14,7 +14,7 @@ namespace PTC.Core
         /// <summary>
         /// 上り方面と下り方面の接続先を管理する基本的なクラス。
         /// </summary>
-        public struct Linker
+        public struct Linker : IEquatable<Linker>
         {
             string[]? upIds;
             string[]? downIds;
@@ -60,6 +60,66 @@ namespace PTC.Core
                     this.downIds = downIds.ToArray();
             }
             #endregion
+
+
+            /// <inheritdoc/>
+            public override readonly bool Equals(object? obj)
+            {
+                return obj is Linker linker && Equals(linker);
+            }
+            /// <inheritdoc/>
+            public readonly bool Equals(Linker other)
+            {
+                if (Equals(upIds, other.upIds) && Equals(downIds, other.downIds))
+                    return true;
+                else
+                    return false;
+
+                static bool Equals(string[]? array0, string[]? array1)
+                {
+                    if (array0 is null)
+                    {
+                        return array1 is null;
+                    }
+                    else if (array1 is null)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+#if NET
+                        return ReferenceEquals(array0, array1) || array0.AsSpan().SequenceEqual(array1);
+#else
+                        return ReferenceEquals(array0, array1) || array0.SequenceEqual(array1);
+#endif
+                    }
+                }
+            }
+
+            /// <inheritdoc/>
+            public override readonly int GetHashCode()
+            {
+#if NET
+                return HashCode.Combine(upIds, downIds);
+#else
+                int hashCode = -172096013;
+                hashCode = hashCode * -1521134295 + EqualityComparer<string[]?>.Default.GetHashCode(upIds!);
+                hashCode = hashCode * -1521134295 + EqualityComparer<string[]?>.Default.GetHashCode(downIds!);
+                return hashCode;
+#endif
+            }
+#pragma warning disable CS1591 // 公開されている型またはメンバーの XML コメントがありません
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            public static bool operator ==(Linker left, Linker right)
+            {
+                return left.Equals(right);
+            }
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            public static bool operator !=(Linker left, Linker right)
+            {
+                return !left.Equals(right);
+            }
+#pragma warning restore CS1591 // 公開されている型またはメンバーの XML コメントがありません
         }
     }
 }
