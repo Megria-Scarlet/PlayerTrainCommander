@@ -445,4 +445,38 @@ namespace PTC.Core
             }
         }
     }
+
+    /// <summary>
+    /// 分岐器を保有する閉そくを管理するクラス。
+    /// </summary>
+    public class BranchingTrack : Track
+    {
+        /// <summary>
+        /// 閉そくの種類を示す既定の文字列。
+        /// </summary>
+        public const string TrackTypeName = "Branching";
+        /// <summary>
+        /// 値を指定して、新しい <see cref="BranchingTrack"/> 型のオブジェクトを作成します。
+        /// </summary>
+        /// <param name="id">固有の ID 。</param>
+        /// <param name="type">閉そくの種類を示す文字列。</param>
+        /// <param name="length">閉そくの長さ (m) 。</param>
+        /// <param name="speedLimit">閉そくの制限速度 (km/h) 。</param>
+        /// <param name="linker">閉そくの接続先。</param>
+        public BranchingTrack(string id, string type, uint length, uint speedLimit, Linker linker) : base(id, type, length, speedLimit, linker)
+        {
+
+        }
+        /// <summary>
+        /// 値を指定して、新しい <see cref="BranchingTrack"/> 型のオブジェクトを作成します。
+        /// </summary>
+        /// <param name="id">固有の ID 。</param>
+        /// <param name="length">閉そくの長さ (m) 。</param>
+        /// <param name="speedLimit">閉そくの制限速度 (km/h) 。</param>
+        /// <param name="linker">閉そくの接続先。</param>
+        public BranchingTrack(string id, uint length, uint speedLimit, Linker linker) : this(id, TrackTypeName, length, speedLimit, linker)
+        {
+
+        }
+    }
 }
