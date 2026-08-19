@@ -11,6 +11,8 @@ namespace PTC.Core.Loader
     {
         private DirectoryInfo rootDirectory;
 
+        private StationFile? stationFile;
+
         public CoreLoader(DirectoryInfo rootDirectory)
         {
             this.rootDirectory = rootDirectory;
@@ -20,11 +22,36 @@ namespace PTC.Core.Loader
         {
             try
             {
-
+                List<DirectoryInfo> directorys = rootDirectory.EnumerateDirectories().ToList();
+                this.stationFile = LoadStation(directorys);
             }
             catch (Exception ex)
             {
                 callback.WriteError("An exception occurred.", ex);
+            }
+            StationFile? LoadStation(List<DirectoryInfo> directorys)
+            {
+                var staitonDirectory = directorys.FirstOrDefault(x => x.Name.Equals("station", StringComparison.InvariantCultureIgnoreCase));
+                if (staitonDirectory is null)
+                {
+                    callback.WriteError("The \"staiton\" folder is missing.");
+                    return null;
+                }
+                else
+                {
+                    directorys.Remove(staitonDirectory);
+                    var stationFileInfo = staitonDirectory.EnumerateFiles().FirstOrDefault(x => x.Name.Equals("station.json", StringComparison.InvariantCultureIgnoreCase));
+                    if (stationFileInfo is null)
+                    {
+                        callback.WriteError("The \"station.json\" file is missing.");
+                        return null;
+                    }
+                    else
+                    {
+                        using FileStream fileStream = stationFileInfo.OpenRead();
+                        return StationFile.FromJson(fileStream);
+                    }
+                }
             }
         }
     }
