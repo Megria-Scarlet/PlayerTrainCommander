@@ -86,7 +86,7 @@ namespace PTC.Core.Loader
                                         Track? track = JsonSerializer.Deserialize<Track>(ref reader, options);
                                         if (track is not null)
                                         {
-                                            if (string.Equals(track.Id, "Switch", StringComparison.InvariantCultureIgnoreCase))
+                                            if (string.Equals(track.TrackType, "Switch", StringComparison.InvariantCultureIgnoreCase))
                                             {
                                                 tracks.Add(new BranchingTrack(track.Id, track.Length, track.SpeedLimit, track.Link));
                                             }
