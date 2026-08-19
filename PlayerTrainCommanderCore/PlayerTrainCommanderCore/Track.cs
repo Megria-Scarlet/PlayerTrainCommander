@@ -87,6 +87,12 @@ namespace PTC.Core
         {
             return string.IsNullOrWhiteSpace(id) ? ToString()! : id;
         }
+        /// <inheritdoc cref="Linker.GetNextTrack(bool, ReadOnlySpan{Track})"/>
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public TrackEnumerator GetNextTrack(bool direction, ReadOnlySpan<Track> tracks) => linker.GetNextTrack(direction, tracks);
+        /// <inheritdoc cref="Linker.GetNextTrack(bool, IEnumerable{Track})"/>
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<Track> GetNextTrack(bool direction, IEnumerable<Track> tracks) => linker.GetNextTrack(direction, tracks);
 
         /// <summary>
         /// 上り方面と下り方面の接続先を管理する基本的なクラス。
@@ -156,6 +162,39 @@ namespace PTC.Core
             {
                 [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
                 get => new(downIds);
+            }
+            /// <summary>
+            /// 次の閉そくを取得します。
+            /// </summary>
+            /// <param name="direction"><see langword="true"/> の場合は上り方面、 <see langword="false"/> の場合は下り方面</param>
+            /// <param name="tracks">検索する <see cref="Track"/> 型のオブジェクトを格納する読み取り専用のスパン。</param>
+            /// <returns>次の閉そくを列挙するオブジェクト。</returns>
+            public readonly TrackEnumerator GetNextTrack(bool direction, ReadOnlySpan<Track> tracks)
+            {
+                return new(tracks, direction ? this.upIds : this.downIds);
+            }
+            /// <summary>
+            /// 次の閉そくを取得します。
+            /// </summary>
+            /// <param name="direction"><see langword="true"/> の場合は上り方面、 <see langword="false"/> の場合は下り方面</param>
+            /// <param name="tracks">検索する <see cref="Track"/> 型のオブジェクトを列挙するオブジェクト。</param>
+            /// <returns>次の閉そくを列挙するオブジェクト。</returns>
+            public readonly IEnumerable<Track> GetNextTrack(bool direction, IEnumerable<Track> tracks)
+            {
+                if (direction)
+                {
+                    if (upIds is null)
+                        return [];
+                    else
+                        return upIds.Select(x => tracks.FirstOrDefault(track => track.Id == x)).Where(x => x is not null)!;
+                }
+                else
+                {
+                    if (downIds is null)
+                        return [];
+                    else
+                        return downIds.Select(x => tracks.FirstOrDefault(track => track.Id == x)).Where(x => x is not null)!;
+                }
             }
 
             /// <inheritdoc/>
@@ -329,12 +368,26 @@ namespace PTC.Core
             }
         }
 
+        /// <summary>
+        /// 文字列 Id に一致する <see cref="Track"/> 型のオブジェクトを列挙する構造体。
+        /// </summary>
         public ref struct TrackEnumerator : IEnumerator<Track>
         {
             private readonly ReadOnlySpan<Track> tracks;
             private readonly ReadOnlySpan<string> ids;
             private int _index;
             private int _trackIndex;
+
+            /// <summary>
+            /// 値を指定して、新しい <see cref="TrackEnumerator"/> 型のオブジェクトを作成します。
+            /// </summary>
+            /// <param name="tracks"><see cref="Track"/> 型のオブジェクトを格納する読み取り専用のスパン。</param>
+            /// <param name="ids">Id を示す文字列を格納する読み取り専用のスパン。</param>
+            public TrackEnumerator(ReadOnlySpan<Track> tracks, ReadOnlySpan<string> ids)
+            {
+                this.tracks = tracks;
+                this.ids = ids;
+            }
 
             /// <inheritdoc cref="IEnumerator{T}.Current"/>
             public readonly ref readonly Track Current
@@ -346,6 +399,11 @@ namespace PTC.Core
             /// <inheritdoc cref="System.Collections.IEnumerator.MoveNext"/>
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             public bool MoveNext() => TryMoveNext(out _);
+            /// <summary>
+            /// 列挙子を次の要素に進め、現在の要素を取得します。
+            /// </summary>
+            /// <param name="track">現在の要素。</param>
+            /// <returns>列挙子が次の要素に正常に進んだ場合は <see langword="true"/> 、それ以外の場合は <see langword="false"/> 。</returns>
             public bool TryMoveNext(out Track track)
             {
                 while (_index < ids.Length - 1)
