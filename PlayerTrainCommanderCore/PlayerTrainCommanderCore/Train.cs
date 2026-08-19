@@ -19,6 +19,15 @@ namespace PTC.Core
         private float acceleration;
         private float deceleration;
 
+        /// <summary>
+        /// 値を指定して、新しい <see cref="Train"/> 型のオブジェクトを作成します。
+        /// </summary>
+        /// <param name="id">固有の ID 。</param>
+        /// <param name="name">識別に使用する任意の文字列。</param>
+        /// <param name="seating">着席定員数。</param>
+        /// <param name="standing">立席定員数。</param>
+        /// <param name="acceleration">加速度。(km/h/s)</param>
+        /// <param name="deceleration">減速度。(km/h/s)</param>
         public Train(string id, string? name, uint seating, uint standing, float acceleration, float deceleration)
         {
             this.id = id;
@@ -40,6 +49,43 @@ namespace PTC.Core
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.name;
+        }
+
+        /// <summary>
+        /// 着席定員数を取得します。
+        /// </summary>
+        /// <returns>着席定員数を示す 32 ビット符号なし整数。</returns>
+        public uint SeatCapacity
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => seating;
+        }
+        /// <summary>
+        /// 立席定員数を取得します。
+        /// </summary>
+        /// <returns>立席定員数を示す 32 ビット符号なし整数。</returns>
+        public uint StandCapacity
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => standing;
+        }
+        /// <summary>
+        /// 加速度 (km/h/s) を取得します。
+        /// </summary>
+        /// <returns>加速度 (km/h/s) を示す単精度浮動小数点数。</returns>
+        public float Acceleration
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => acceleration;
+        }
+        /// <summary>
+        /// 減速度 (km/h/s) を取得します。
+        /// </summary>
+        /// <returns>減速度 (km/h/s) を示す単精度浮動小数点数。</returns>
+        public float Deceleration
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => deceleration;
         }
 
         /// <summary>
