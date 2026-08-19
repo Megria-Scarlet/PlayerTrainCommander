@@ -11,8 +11,25 @@ namespace PTC.Core
     /// <summary>
     /// 線路を管理するクラス。
     /// </summary>
-    public class Track
+    public class Track : IInherentObject
     {
+        private string id;
+
+        public Track(string id)
+        {
+            this.id = id;
+        }
+
+        /// <summary>
+        /// 管理に使用する固有の文字列を取得します。
+        /// </summary>
+        /// <returns>管理に使用する固有の文字列。</returns>
+        public string Id
+        {
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => this.id;
+        }
+
         /// <summary>
         /// 上り方面と下り方面の接続先を管理する基本的なクラス。
         /// </summary>
@@ -64,6 +81,24 @@ namespace PTC.Core
             }
             #endregion
 
+            /// <summary>
+            /// 上り方面の接続先を示す文字列型の読み取り専用のスパンを取得します。
+            /// </summary>
+            /// <returns>上り方面の接続先を示す文字列型の読み取り専用のスパン。</returns>
+            public readonly ReadOnlySpan<string> UpIds
+            {
+                [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+                get => new(upIds);
+            }
+            /// <summary>
+            /// 下り方面の接続先を示す文字列型の読み取り専用のスパンを取得します。
+            /// </summary>
+            /// <returns>下り方面の接続先を示す文字列型の読み取り専用のスパン。</returns>
+            public readonly ReadOnlySpan<string> DownIds
+            {
+                [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+                get => new(downIds);
+            }
 
             /// <inheritdoc/>
             public override readonly bool Equals(object? obj)
