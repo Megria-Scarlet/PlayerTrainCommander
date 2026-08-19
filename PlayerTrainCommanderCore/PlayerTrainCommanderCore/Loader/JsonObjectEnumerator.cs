@@ -91,6 +91,13 @@ namespace PTC.Core
             reader = default;
         }
 
+        /// <inheritdoc cref="JsonStringArrayEnumerator.Reader"/>
+        public readonly Utf8JsonReader Reader
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => reader;
+        }
+
         readonly void IEnumerator.Reset()
         {
 
