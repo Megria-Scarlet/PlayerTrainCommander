@@ -16,6 +16,7 @@ namespace PTC.Core
         /// <summary>
         /// 上り方面と下り方面の接続先を管理する基本的なクラス。
         /// </summary>
+        [JsonConverter(typeof(LinkerJsonConverter))]
         public struct Linker : IEquatable<Linker>
         {
             internal string[]? upIds;
@@ -124,8 +125,14 @@ namespace PTC.Core
 #pragma warning restore CS1591 // 公開されている型またはメンバーの XML コメントがありません
         }
 
+        /// <summary>
+        /// <see cref="Linker"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
+        /// </summary>
         public class LinkerJsonConverter : JsonConverter<Linker>
         {
+            const string UpIdsProperty = "joinupids";
+            const string DownIdsProperty = "joindownids";
+            /// <inheritdoc/>
             public override Linker Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
                 if (typeof(Linker) == typeToConvert)
@@ -134,7 +141,7 @@ namespace PTC.Core
                     {
                         JsonElement element = JsonElement.ParseValue(ref reader);
                         List<string>? upIds, downIds;
-                        if (element.TryGetProperty("joinupids", out JsonElement element1))
+                        if (element.TryGetProperty(UpIdsProperty, out JsonElement element1))
                         {
                             upIds = CreateList(element1);
                         }
@@ -142,7 +149,7 @@ namespace PTC.Core
                         {
                             upIds = null;
                         }
-                        if (element.TryGetProperty("joindownids", out element1))
+                        if (element.TryGetProperty(DownIdsProperty, out element1))
                         {
                             downIds = CreateList(element1);
                         }
@@ -159,20 +166,19 @@ namespace PTC.Core
                 }
                 return default;
             }
-
+            /// <inheritdoc/>
             public override void Write(Utf8JsonWriter writer, Linker value, JsonSerializerOptions options)
             {
                 writer.WriteStartObject();
                 if (value.upIds is not null)
                 {
-                    const string name = "joinupids";
                     if (value.upIds.Length == 1)
                     {
-                        writer.WriteString(name, value.upIds[0]);
+                        writer.WriteString(UpIdsProperty, value.upIds[0]);
                     }
                     else
                     {
-                        writer.WriteStartArray(name);
+                        writer.WriteStartArray(UpIdsProperty);
                         foreach (var id in value.upIds)
                         {
                             writer.WriteStringValue(id);
@@ -182,14 +188,13 @@ namespace PTC.Core
                 }
                 if (value.downIds is not null)
                 {
-                    const string name = "joindownids";
                     if (value.downIds.Length == 1)
                     {
-                        writer.WriteString(name, value.downIds[0]);
+                        writer.WriteString(DownIdsProperty, value.downIds[0]);
                     }
                     else
                     {
-                        writer.WriteStartArray(name);
+                        writer.WriteStartArray(DownIdsProperty);
                         foreach (var id in value.downIds)
                         {
                             writer.WriteStringValue(id);
