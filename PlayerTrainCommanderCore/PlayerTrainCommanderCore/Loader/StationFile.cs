@@ -11,7 +11,7 @@ namespace PTC.Core.Loader
 {
 #pragma warning disable CS1591 // 公開されている型またはメンバーの XML コメントがありません
     [JsonConverter(typeof(StationFileJsonConverter))]
-    public class StationFile
+    internal class StationFile
     {
         private string version;
 
@@ -61,7 +61,7 @@ namespace PTC.Core.Loader
         }
     }
 
-    public class StationFileJsonConverter : JsonConverter<StationFile>
+    internal class StationFileJsonConverter : JsonConverter<StationFile>
     {
         public override StationFile? Read(scoped ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

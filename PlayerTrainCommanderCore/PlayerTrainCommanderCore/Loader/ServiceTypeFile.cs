@@ -11,7 +11,7 @@ namespace PTC.Core.Loader
 {
 #pragma warning disable CS1591 // 公開されている型またはメンバーの XML コメントがありません
     [JsonConverter(typeof(ServiceTypeFileJsonConverter))]
-    public class ServiceTypeFile
+    internal class ServiceTypeFile
     {
         private string version;
         private ServiceType[] serviceTypes;
@@ -56,7 +56,7 @@ namespace PTC.Core.Loader
             return JsonSerializer.Deserialize<ServiceTypeFile>(utf8Json, options);
         }
     }
-    public class ServiceTypeFileJsonConverter : JsonConverter<ServiceTypeFile>
+    internal class ServiceTypeFileJsonConverter : JsonConverter<ServiceTypeFile>
     {
         public override ServiceTypeFile? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

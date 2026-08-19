@@ -10,7 +10,7 @@ namespace PTC.Core.Loader
 {
 #pragma warning disable CS1591 // 公開されている型またはメンバーの XML コメントがありません
     [JsonConverter(typeof(TrackFileJsonConverter))]
-    public class TrackFile
+    internal class TrackFile
     {
         private string version;
         private Track[] tracks;
@@ -49,7 +49,7 @@ namespace PTC.Core.Loader
             return JsonSerializer.Deserialize<TrackFile>(utf8Json, options);
         }
     }
-    public class TrackFileJsonConverter : JsonConverter<TrackFile>
+    internal class TrackFileJsonConverter : JsonConverter<TrackFile>
     {
         public override TrackFile? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
