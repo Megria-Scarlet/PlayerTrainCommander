@@ -10,6 +10,7 @@ namespace PTC.Core
     /// 編成データを定義するクラス。
     /// </summary>
     [JsonConverter(typeof(TrainJsonConverter))]
+    [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
     public class Train : IInherentObject
     {
         private string id;
@@ -123,6 +124,11 @@ namespace PTC.Core
         public static Train? FromJson(Stream utf8Json, JsonSerializerOptions? options = null)
         {
             return JsonSerializer.Deserialize<Train>(utf8Json, options);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string GetDebuggerDisplay()
+        {
+            return name ?? (string.IsNullOrWhiteSpace(id) ? ToString()! : id);
         }
     }
     /// <summary>

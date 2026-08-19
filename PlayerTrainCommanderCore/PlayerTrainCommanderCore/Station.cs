@@ -81,7 +81,7 @@ namespace PTC.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetDebuggerDisplay()
         {
-            return name ?? ToString()!;
+            return name ?? (string.IsNullOrWhiteSpace(id) ? ToString()! : id);
         }
     }
 }
