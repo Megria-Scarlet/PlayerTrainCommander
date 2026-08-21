@@ -249,7 +249,8 @@ namespace PTC.Core
         /// 現在の列車種別を即時に変更します。
         /// </summary>
         /// <remarks>
-        /// <see cref="State"/> が <see cref="TrainState.BoardingAndAlighting"/> の時のみ設定できます。
+        /// <see cref="State"/> が <see cref="TrainState.Waiting"/> または <see cref="TrainState.BoardingAndAlighting"/> の時 (<paramref name="serviceType"/>
+        /// が <see langword="null"/> の場合は <see cref="TrainState.Undefined"/>, <see cref="TrainState.Detention"/> を含む) のみ設定できます。
         /// </remarks>
         /// <param name="serviceType">新しい列車種別。</param>
         /// <exception cref="InvalidOperationException"/>
@@ -260,9 +261,19 @@ namespace PTC.Core
             try
             {
                 spinLock.Enter(ref gotLock);
-                if (this.state != TrainState.BoardingAndAlighting)
+                if (serviceType is null)
                 {
-                    ThrowInvalidOperation("The value of \"State\" is not \"TrainState.BoardingAndAlighting\".");
+                    if (this.state is not (TrainState.Undefined or TrainState.Detention or TrainState.BoardingAndAlighting or TrainState.Waiting))
+                    {
+                        ThrowInvalidOperation("The value of \"State\" is not \"TrainState.Undefined\" or \"TrainState.Detention\" or \"TrainState.Waiting\" or \"TrainState.BoardingAndAlighting\".");
+                    }
+                }
+                else
+                {
+                    if (this.state is not (TrainState.BoardingAndAlighting or TrainState.Waiting))
+                    {
+                        ThrowInvalidOperation("The value of \"State\" is not \"TrainState.Waiting\" or \"TrainState.BoardingAndAlighting\".");
+                    }
                 }
                 if (!EqualityComparer<ServiceType?>.Default.Equals(serviceType, this.serviceType))
                 {
