@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "PlayerTrainCommanderCore/0.1.1": {
+      "PlayerTrainCommanderCore/0.1.2": {
         "runtime": {
           "PlayerTrainCommanderCore.dll": {}
         }
@@ -14,7 +14,7 @@
     }
   },
   "libraries": {
-    "PlayerTrainCommanderCore/0.1.1": {
+    "PlayerTrainCommanderCore/0.1.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

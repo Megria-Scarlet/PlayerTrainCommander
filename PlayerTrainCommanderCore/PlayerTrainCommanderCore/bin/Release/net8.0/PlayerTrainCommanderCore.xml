@@ -192,6 +192,19 @@
         <member name="M:PTC.Core.TrackJsonConverter.Write(System.Text.Json.Utf8JsonWriter,PTC.Core.Track,System.Text.Json.JsonSerializerOptions)">
             <inheritdoc/>
         </member>
+        <member name="M:PTC.Core.TrackJsonConverter.ConvertTrack(System.String@,System.String@,System.UInt32,System.UInt32,PTC.Core.Track.Linker@,System.Text.Json.JsonElement@,System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            <paramref name="trackType"/> に応じた <see cref="T:PTC.Core.Track"/> 型を継承するオブジェクトを取得します。
+            </summary>
+            <param name="id"></param>
+            <param name="trackType"></param>
+            <param name="length"></param>
+            <param name="speedLimit"></param>
+            <param name="linker"></param>
+            <param name="element"></param>
+            <param name="options"></param>
+            <returns><see cref="T:PTC.Core.Track"/> 型を継承するオブジェクト。</returns>
+        </member>
         <member name="T:PTC.Core.ServiceType">
             <summary>
             列車種別を管理するクラス。
@@ -484,12 +497,193 @@
         </member>
         <member name="T:PTC.Core.Train">
             <summary>
+            動的に情報が変化する列車を管理するクラス。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.Train.DirectionUp">
+            <summary>
+            上り方面を示す定数。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.Train.DirectionDown">
+            <summary>
+            下り方面を示す定数。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.Train.state">
+            <summary>
+            現在の列車状態。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.Train.trainData">
+            <summary>
+            列車情報。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.Train.serviceType">
+            <summary>
+            列車種別。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.Train.currentTrack">
+            <summary>
+            現在の閉そく。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.Train.direction">
+            <summary>
+            進行方向。
+            </summary>
+            <value>
+            <b>-1</b> 下り方面<br></br>
+            <b>0</b> なし<br></br>
+            <b>1</b> 上り方面
+            </value>
+        </member>
+        <member name="F:PTC.Core.Train.passengers">
+            <summary>
+            乗客数。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.Train.speed">
+            <summary>
+            現在の進行方向に対する速度 (km/h) 。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.Train.spinLock">
+            <summary>
+            同期処理に使用する <see cref="T:System.Threading.SpinLock"/> 構造体。
+            </summary>
+        </member>
+        <member name="P:PTC.Core.Train.State">
+            <summary>
+            現在の列車の状態を示す値を取得します。
+            </summary>
+            <returns>
+            現在の列車の状態を示す <see cref="T:PTC.Core.TrainState"/> 型の値。
+            </returns>
+            <remarks>
+            このメソッドはスレッドセーフです。
+            </remarks>
+        </member>
+        <member name="P:PTC.Core.Train.Data">
+            <summary>
+            列車の編成情報を示す <see cref="T:PTC.Core.TrainData"/> 型のオブジェクトを取得します。
+            </summary>
+            <returns>
+            列車の編成情報を示す <see cref="T:PTC.Core.TrainData"/> 型のオブジェクト。
+            </returns>
+            <remarks>
+            このメソッドはスレッドセーフではありません。
+            </remarks>
+        </member>
+        <member name="P:PTC.Core.Train.Direction">
+            <summary>
+            進行方向を示す値を取得します。
+            </summary>
+            <returns>
+            進行方向を示す 32 ビット符号付き整数。
+            </returns>
+            <remarks>
+            このメソッドはスレッドセーフです。
+            </remarks>
+            <value>
+            <b>-1</b> 下り方面<br></br>
+            <b>0</b> なし<br></br>
+            <b>1</b> 上り方面
+            </value>
+        </member>
+        <member name="P:PTC.Core.Train.Passengers">
+            <summary>
+            乗客数を示す値を取得します。
+            </summary>
+            <returns>
+            乗客数を示す 32 ビット符号なし整数。
+            </returns>
+            <remarks>
+            このメソッドはスレッドセーフです。
+            </remarks>
+        </member>
+        <member name="P:PTC.Core.Train.CurrentServiceType">
+            <summary>
+            現在の列車種別を示す <see cref="T:PTC.Core.ServiceType"/> 型のオブジェクトを取得します。
+            </summary>
+            <returns>
+            列車種別を示す <see cref="T:PTC.Core.ServiceType"/> 型のオブジェクト、または <see langword="null"/> 。
+            </returns>
+            <remarks>
+            このメソッドはスレッドセーフです。
+            </remarks>
+        </member>
+        <member name="P:PTC.Core.Train.Speed">
+            <summary>
+            現在の進行方向に対する速度 (km/h) を取得します。
+            </summary>
+            <returns>
+            現在の進行方向に対する速度 (km/h) を示す倍精度浮動小数点。
+            </returns>
+            <remarks>
+            このメソッドはスレッドセーフです。
+            </remarks>
+        </member>
+        <member name="M:PTC.Core.Train.#ctor">
+            <summary>
+            既定の値を使用して、新しい <see cref="T:PTC.Core.Train"/> 型のオブジェクトを作成します。
+            </summary>
+        </member>
+        <member name="M:PTC.Core.Train.#ctor(PTC.Core.TrainData,PTC.Core.Track,System.Int32)">
+            <summary>
+            列車情報と現在の閉そくを指定して、新しい <see cref="T:PTC.Core.Train"/> 型のオブジェクトを作成します。
+            </summary>
+            <param name="trainData">列車情報を示す <see cref="T:PTC.Core.TrainData"/> 型のオブジェクト。</param>
+            <param name="currentTrack">現在の閉そくを示す <see cref="T:PTC.Core.Track"/> 型のオブジェクト。</param>
+            <param name="direction">進行方向を示す値。</param>
+        </member>
+        <member name="M:PTC.Core.Train.SetPassengers(System.UInt32)">
+            <summary>
+            乗客数を設定します。
+            </summary>
+            <remarks>
+            <see cref="P:PTC.Core.Train.State"/> が <see cref="F:PTC.Core.TrainState.BoardingAndAlighting"/> の時のみ設定できます。<br></br>
+            このメソッドはスレッドセーフです。
+            </remarks>
+            <param name="passengers">乗客数。</param>
+            <exception cref="T:System.InvalidOperationException"/>
+        </member>
+        <member name="M:PTC.Core.Train.SetServiceType(PTC.Core.ServiceType)">
+            <summary>
+            現在の列車種別を即時に変更します。
+            </summary>
+            <remarks>
+            <see cref="P:PTC.Core.Train.State"/> が <see cref="F:PTC.Core.TrainState.Waiting"/> または <see cref="F:PTC.Core.TrainState.BoardingAndAlighting"/> の時 (<paramref name="serviceType"/>
+            が <see langword="null"/> の場合は <see cref="F:PTC.Core.TrainState.Undefined"/>, <see cref="F:PTC.Core.TrainState.Detention"/> を含む) のみ設定できます。<br></br>
+            このメソッドはスレッドセーフです。
+            </remarks>
+            <param name="serviceType">新しい列車種別。</param>
+            <exception cref="T:System.InvalidOperationException"/>
+        </member>
+        <member name="M:PTC.Core.Train.SetSpeed(System.Double)">
+            <summary>
+            現在の進行方向に対する速度 (km/h) を即時に変更します。
+            </summary>
+            <remarks>
+            <see cref="P:PTC.Core.Train.State"/> が <see cref="F:PTC.Core.TrainState.Undefined"/> または <see cref="F:PTC.Core.TrainState.Detention"/> 以外の時のみ設定できます。<br></br>
+            このメソッドはスレッドセーフです。
+            </remarks>
+            <param name="speed">新しい速度 (km/h) 。</param>
+            <exception cref="T:System.InvalidOperationException"/>
+        </member>
+        <member name="E:PTC.Core.Train.PropertyChanged">
+            <inheritdoc/>
+        </member>
+        <member name="T:PTC.Core.TrainData">
+            <summary>
             編成データを定義するクラス。
             </summary>
         </member>
-        <member name="M:PTC.Core.Train.#ctor(System.String,System.String,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.Single,System.Single)">
+        <member name="M:PTC.Core.TrainData.#ctor(System.String,System.String,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.Single,System.Single)">
             <summary>
-            値を指定して、新しい <see cref="T:PTC.Core.Train"/> 型のオブジェクトを作成します。
+            値を指定して、新しい <see cref="T:PTC.Core.TrainData"/> 型のオブジェクトを作成します。
             </summary>
             <param name="id">固有の ID 。</param>
             <param name="name">識別に使用する任意の文字列。</param>
@@ -500,66 +694,111 @@
             <param name="acceleration">加速度。(km/h/s)</param>
             <param name="deceleration">減速度。(km/h/s)</param>
         </member>
-        <member name="P:PTC.Core.Train.Id">
+        <member name="P:PTC.Core.TrainData.Id">
             <inheritdoc/>
         </member>
-        <member name="P:PTC.Core.Train.Name">
+        <member name="P:PTC.Core.TrainData.Name">
             <inheritdoc cref="P:PTC.Core.Station.Name"/>
         </member>
-        <member name="P:PTC.Core.Train.SeatCapacity">
+        <member name="P:PTC.Core.TrainData.SeatCapacity">
             <summary>
             着席定員数を取得します。
             </summary>
             <returns>着席定員数を示す 32 ビット符号なし整数。</returns>
         </member>
-        <member name="P:PTC.Core.Train.StandCapacity">
+        <member name="P:PTC.Core.TrainData.StandCapacity">
             <summary>
             立席定員数を取得します。
             </summary>
             <returns>立席定員数を示す 32 ビット符号なし整数。</returns>
         </member>
-        <member name="P:PTC.Core.Train.Acceleration">
+        <member name="P:PTC.Core.TrainData.Acceleration">
             <summary>
             加速度 (km/h/s) を取得します。
             </summary>
             <returns>加速度 (km/h/s) を示す単精度浮動小数点数。</returns>
         </member>
-        <member name="P:PTC.Core.Train.Deceleration">
+        <member name="P:PTC.Core.TrainData.Deceleration">
             <summary>
             減速度 (km/h/s) を取得します。
             </summary>
             <returns>減速度 (km/h/s) を示す単精度浮動小数点数。</returns>
         </member>
-        <member name="P:PTC.Core.Train.TotalLength">
+        <member name="P:PTC.Core.TrainData.TotalLength">
             <summary>
             編成長 (mm) を取得します。
             </summary>
             <returns>編成長 (mm) を示す 32 ビット符号なし整数。</returns>
         </member>
-        <member name="P:PTC.Core.Train.CarCount">
+        <member name="P:PTC.Core.TrainData.CarCount">
             <summary>
             編成両数を取得します。
             </summary>
             <returns>編成両数を示す 32 ビット符号なし整数。</returns>
         </member>
-        <member name="M:PTC.Core.Train.FromJson(System.IO.Stream,System.Text.Json.JsonSerializerOptions)">
+        <member name="M:PTC.Core.TrainData.FromJson(System.IO.Stream,System.Text.Json.JsonSerializerOptions)">
             <summary>
-            json ファイルのストリームからデータを読み取り、 <see cref="T:PTC.Core.Train"/> 型のオブジェクトを取得します。
+            json ファイルのストリームからデータを読み取り、 <see cref="T:PTC.Core.TrainData"/> 型のオブジェクトを取得します。
             </summary>
             <param name="utf8Json">json ファイルのストリーム。</param>
-            <returns>json ファイルから読み取られた <see cref="T:PTC.Core.Train"/> 型のオブジェクト。</returns>
+            <returns>json ファイルから読み取られた <see cref="T:PTC.Core.TrainData"/> 型のオブジェクト。</returns>
             <param name="options">デシリアライズに使用するオプション。</param>
         </member>
-        <member name="T:PTC.Core.TrainJsonConverter">
+        <member name="T:PTC.Core.TrainDataJsonConverter">
             <summary>
-            <see cref="T:PTC.Core.Train"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
+            <see cref="T:PTC.Core.TrainData"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
             </summary>
         </member>
-        <member name="M:PTC.Core.TrainJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+        <member name="M:PTC.Core.TrainDataJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:PTC.Core.TrainJsonConverter.Write(System.Text.Json.Utf8JsonWriter,PTC.Core.Train,System.Text.Json.JsonSerializerOptions)">
+        <member name="M:PTC.Core.TrainDataJsonConverter.Write(System.Text.Json.Utf8JsonWriter,PTC.Core.TrainData,System.Text.Json.JsonSerializerOptions)">
             <inheritdoc/>
+        </member>
+        <member name="T:PTC.Core.TrainState">
+            <summary>
+            列車の状態を表す定数を定義します。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.TrainState.Undefined">
+            <summary>
+            未定義の値。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.TrainState.Detention">
+            <summary>
+            留置中の値。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.TrainState.Waiting">
+            <summary>
+            待機中の値。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.TrainState.BoardingAndAlighting">
+            <summary>
+            乗降中の値。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.TrainState.Stop">
+            <summary>
+            停車中の値。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.TrainState.Acceleration">
+            <summary>
+            加速中の値。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.TrainState.Coasting">
+            <summary>
+            惰行中の値。
+            </summary>
+        </member>
+        <member name="F:PTC.Core.TrainState.Deceleration">
+            <summary>
+            減速中の値。
+            </summary>
         </member>
     </members>
 </doc>
