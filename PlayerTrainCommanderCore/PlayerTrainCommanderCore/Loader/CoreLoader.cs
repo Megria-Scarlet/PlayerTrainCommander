@@ -14,7 +14,7 @@ namespace PTC.Core.Loader
 
         private StationFile? stationFile;
         private ServiceTypeFile? serviceTypeFile;
-        private Train[]? trains;
+        private TrainData[]? trains;
         private TrackFile? trackFile;
 
         public CoreLoader(DirectoryInfo rootDirectory)
@@ -88,7 +88,7 @@ namespace PTC.Core.Loader
                     }
                 }
             }
-            IEnumerable<Train> LoadTrain(List<DirectoryInfo> directorys)
+            IEnumerable<TrainData> LoadTrain(List<DirectoryInfo> directorys)
             {
                 var trainDirectory = directorys.FirstOrDefault(x => x.Name.Equals("Train", StringComparison.InvariantCultureIgnoreCase));
                 if (trainDirectory is null)
@@ -101,10 +101,10 @@ namespace PTC.Core.Loader
                     directorys.Remove(trainDirectory);
                     return trainDirectory.EnumerateFiles("*.json").Select(Load).Where(x => x is not null)!;
                 }
-                static Train? Load(FileInfo fileInfo)
+                static TrainData? Load(FileInfo fileInfo)
                 {
                     using FileStream fileStream = fileInfo.OpenRead();
-                    return System.Text.Json.JsonSerializer.Deserialize<Train>(fileStream);
+                    return System.Text.Json.JsonSerializer.Deserialize<TrainData>(fileStream);
                 }
             }
             TrackFile? LoadTrack(List<DirectoryInfo> directorys)
@@ -141,7 +141,7 @@ namespace PTC.Core.Loader
         {
             get => serviceTypeFile is null ? [] : serviceTypeFile.ServiceTypes;
         }
-        public ReadOnlySpan<Train> Trains
+        public ReadOnlySpan<TrainData> Trains
         {
             get => new(trains);
         }

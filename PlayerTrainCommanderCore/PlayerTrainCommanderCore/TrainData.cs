@@ -9,9 +9,9 @@ namespace PTC.Core
     /// <summary>
     /// 編成データを定義するクラス。
     /// </summary>
-    [JsonConverter(typeof(TrainJsonConverter))]
+    [JsonConverter(typeof(TrainDataJsonConverter))]
     [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-    public class Train : IInherentObject
+    public class TrainData : IInherentObject
     {
         private string id;
         private string? name;
@@ -23,7 +23,7 @@ namespace PTC.Core
         private uint carCount;
 
         /// <summary>
-        /// 値を指定して、新しい <see cref="Train"/> 型のオブジェクトを作成します。
+        /// 値を指定して、新しい <see cref="TrainData"/> 型のオブジェクトを作成します。
         /// </summary>
         /// <param name="id">固有の ID 。</param>
         /// <param name="name">識別に使用する任意の文字列。</param>
@@ -33,7 +33,7 @@ namespace PTC.Core
         /// <param name="standing">立席定員数。</param>
         /// <param name="acceleration">加速度。(km/h/s)</param>
         /// <param name="deceleration">減速度。(km/h/s)</param>
-        public Train(string id, string? name, uint totalLength, uint carCount, uint seating, uint standing, float acceleration, float deceleration)
+        public TrainData(string id, string? name, uint totalLength, uint carCount, uint seating, uint standing, float acceleration, float deceleration)
         {
             this.id = id;
             this.name = name;
@@ -115,15 +115,15 @@ namespace PTC.Core
         }
 
         /// <summary>
-        /// json ファイルのストリームからデータを読み取り、 <see cref="Train"/> 型のオブジェクトを取得します。
+        /// json ファイルのストリームからデータを読み取り、 <see cref="TrainData"/> 型のオブジェクトを取得します。
         /// </summary>
         /// <param name="utf8Json">json ファイルのストリーム。</param>
-        /// <returns>json ファイルから読み取られた <see cref="Train"/> 型のオブジェクト。</returns>
+        /// <returns>json ファイルから読み取られた <see cref="TrainData"/> 型のオブジェクト。</returns>
         /// <param name="options">デシリアライズに使用するオプション。</param>
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static Train? FromJson(Stream utf8Json, JsonSerializerOptions? options = null)
+        public static TrainData? FromJson(Stream utf8Json, JsonSerializerOptions? options = null)
         {
-            return JsonSerializer.Deserialize<Train>(utf8Json, options);
+            return JsonSerializer.Deserialize<TrainData>(utf8Json, options);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetDebuggerDisplay()
@@ -132,69 +132,73 @@ namespace PTC.Core
         }
     }
     /// <summary>
-    /// <see cref="Train"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
+    /// <see cref="TrainData"/> 型のオブジェクトと Json ファイルへの相互変換機能を提供します。
     /// </summary>
-    public class TrainJsonConverter : JsonConverter<Train>
+    public class TrainDataJsonConverter : JsonConverter<TrainData>
     {
         /// <inheritdoc/>
-        public override Train? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override TrainData? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (typeof(Train).IsAssignableFrom(typeToConvert))
+            if (typeof(TrainData).IsAssignableFrom(typeToConvert))
             {
                 JsonElement element = JsonElement.ParseValue(ref reader);
                 string? ver;
 
                 if (element.TryGetProperty("version", out JsonElement element1) && (ver = element1.GetString()) == "1.0.1")
                 {
-                    string? name = element.GetProperty("name").ToString();
-                    string? id = element.GetProperty("id").ToString();
-
-                    if (!element.TryGetProperty("totallength", out element1) || !element1.TryGetUInt32(out uint totallength))
-                        totallength = 0;
-                    if (!element.TryGetProperty("cars", out element1) || !element1.TryGetUInt32(out uint cars))
-                        cars = 0;
-                    uint seat, stand;
-                    if (element.TryGetProperty("seat", out element1))
-                    {
-                        if (!element1.TryGetProperty("seating", out JsonElement element2) || !element2.TryGetUInt32(out seat))
-                        {
-                            seat = 0;
-                        }
-                        if (!element1.TryGetProperty("standing", out element2) || !element2.TryGetUInt32(out stand))
-                        {
-                            stand = 0;
-                        }
-                    }
-                    else
-                    {
-                        seat = 0;
-                        stand = 0;
-                    }
-                    float acceleration, deceleration;
-                    if (element.TryGetProperty("performance", out element1))
-                    {
-                        if (!element1.TryGetProperty("acceleration", out JsonElement element2) || !element2.TryGetSingle(out acceleration))
-                        {
-                            acceleration = 0;
-                        }
-                        if (!element1.TryGetProperty("deceleration", out element2) || !element2.TryGetSingle(out deceleration))
-                        {
-                            deceleration = 0;
-                        }
-                    }
-                    else
-                    {
-                        acceleration = 0;
-                        deceleration = 0;
-                    }
-                    return new Train(id, name, totallength, cars, seat, stand, acceleration, deceleration);
+                    return Read101(in element);
                 }
             }
             return null;
         }
 
+        private static TrainData Read101(in JsonElement element)
+        {
+            string? id = element.GetProperty("id").ToString();
+            string? name = element.TryGetProperty("name", out JsonElement element1) ? element1.GetString() : null;
+            if (!element.TryGetProperty("totallength", out element1) || !element1.TryGetUInt32(out uint totallength))
+                totallength = 0;
+            if (!element.TryGetProperty("cars", out element1) || !element1.TryGetUInt32(out uint cars))
+                cars = 0;
+            uint seat, stand;
+            if (element.TryGetProperty("seat", out element1))
+            {
+                if (!element1.TryGetProperty("seating", out JsonElement element2) || !element2.TryGetUInt32(out seat))
+                {
+                    seat = 0;
+                }
+                if (!element1.TryGetProperty("standing", out element2) || !element2.TryGetUInt32(out stand))
+                {
+                    stand = 0;
+                }
+            }
+            else
+            {
+                seat = 0;
+                stand = 0;
+            }
+            float acceleration, deceleration;
+            if (element.TryGetProperty("performance", out element1))
+            {
+                if (!element1.TryGetProperty("acceleration", out JsonElement element2) || !element2.TryGetSingle(out acceleration))
+                {
+                    acceleration = 0;
+                }
+                if (!element1.TryGetProperty("deceleration", out element2) || !element2.TryGetSingle(out deceleration))
+                {
+                    deceleration = 0;
+                }
+            }
+            else
+            {
+                acceleration = 0;
+                deceleration = 0;
+            }
+            return new TrainData(id, name, totallength, cars, seat, stand, acceleration, deceleration);
+        }
+
         /// <inheritdoc/>
-        public override void Write(Utf8JsonWriter writer, Train value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, TrainData value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
         }
