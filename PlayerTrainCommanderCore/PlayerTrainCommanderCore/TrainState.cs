@@ -14,13 +14,17 @@
         /// </summary>
         Detention = 1,
         /// <summary>
-        /// 停車中の値。
+        /// 待機中の値。
         /// </summary>
-        Stop = 2,
+        Waiting = 2,
         /// <summary>
         /// 乗降中の値。
         /// </summary>
         BoardingAndAlighting = 3,
+        /// <summary>
+        /// 停車中の値。
+        /// </summary>
+        Stop = 4,
 
         /// <summary>
         /// 加速中の値。
