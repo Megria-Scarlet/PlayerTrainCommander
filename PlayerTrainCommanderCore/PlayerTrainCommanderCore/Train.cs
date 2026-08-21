@@ -33,6 +33,10 @@ namespace PTC.Core
         /// </summary>
         protected TrainData trainData;
         /// <summary>
+        /// 列車種別。
+        /// </summary>
+        protected ServiceType? serviceType;
+        /// <summary>
         /// 現在の閉そく。
         /// </summary>
         protected Track currentTrack;
@@ -45,6 +49,10 @@ namespace PTC.Core
         /// <b>1</b> 上り方面
         /// </value>
         protected int direction;
+        /// <summary>
+        /// 乗客数。
+        /// </summary>
+        protected uint passengers;
         /// <summary>
         /// 同期処理に使用する <see cref="System.Threading.SpinLock"/> 構造体。
         /// </summary>
@@ -124,6 +132,56 @@ namespace PTC.Core
                 }
             }
         }
+        /// <summary>
+        /// 乗客数を示す値を取得します。
+        /// </summary>
+        /// <returns>
+        /// 乗客数を示す 32 ビット符号なし整数。
+        /// </returns>
+        /// <remarks>
+        /// このメソッドはスレッドセーフです。
+        /// </remarks>
+        public uint Passengers
+        {
+            get
+            {
+                bool gotLock = false;
+                try
+                {
+                    spinLock.Enter(ref gotLock);
+                    return passengers;
+                }
+                finally
+                {
+                    if (gotLock) spinLock.Exit();
+                }
+            }
+        }
+        /// <summary>
+        /// 現在の列車種別を示す <see cref="ServiceType"/> 型のオブジェクトを取得します。
+        /// </summary>
+        /// <returns>
+        /// 列車種別を示す <see cref="ServiceType"/> 型のオブジェクト、または <see langword="null"/> 。
+        /// </returns>
+        /// <remarks>
+        /// このメソッドはスレッドセーフです。
+        /// </remarks>
+        public ServiceType? CurrentServiceType
+        {
+            get
+            {
+                bool gotLock = false;
+                try
+                {
+                    spinLock.Enter(ref gotLock);
+                    return serviceType;
+                }
+                finally
+                {
+                    if (gotLock) spinLock.Exit();
+                }
+            }
+        }
 
         #endregion
 
@@ -152,6 +210,80 @@ namespace PTC.Core
         }
 
         #endregion
+
+        /// <summary>
+        /// 乗客数を設定します。
+        /// </summary>
+        /// <remarks>
+        /// <see cref="State"/> が <see cref="TrainState.BoardingAndAlighting"/> の時のみ設定できます。
+        /// </remarks>
+        /// <param name="passengers">乗客数。</param>
+        /// <exception cref="InvalidOperationException"/>
+        public void SetPassengers(uint passengers)
+        {
+            bool isChenged = false;
+            bool gotLock = false;
+            try
+            {
+                spinLock.Enter(ref gotLock);
+                if (this.state != TrainState.BoardingAndAlighting)
+                {
+                    ThrowInvalidOperation("The value of \"State\" is not \"TrainState.BoardingAndAlighting\".");
+                }
+                if (passengers != this.passengers)
+                {
+                    isChenged = true;
+                    this.passengers = passengers;
+                }
+            }
+            finally
+            {
+                if (gotLock) spinLock.Exit();
+            }
+            if (isChenged)
+            {
+                NotifyPropertyChanged(nameof(Passengers));
+            }
+        }
+        /// <summary>
+        /// 現在の列車種別を即時に変更します。
+        /// </summary>
+        /// <remarks>
+        /// <see cref="State"/> が <see cref="TrainState.BoardingAndAlighting"/> の時のみ設定できます。
+        /// </remarks>
+        /// <param name="serviceType">新しい列車種別。</param>
+        /// <exception cref="InvalidOperationException"/>
+        public void SetServiceType(ServiceType? serviceType)
+        {
+            bool isChenged = false;
+            bool gotLock = false;
+            try
+            {
+                spinLock.Enter(ref gotLock);
+                if (this.state != TrainState.BoardingAndAlighting)
+                {
+                    ThrowInvalidOperation("The value of \"State\" is not \"TrainState.BoardingAndAlighting\".");
+                }
+                if (!EqualityComparer<ServiceType?>.Default.Equals(serviceType, this.serviceType))
+                {
+                    isChenged = true;
+                    this.serviceType = serviceType;
+                }
+            }
+            finally
+            {
+                if (gotLock) spinLock.Exit();
+            }
+            if (isChenged)
+            {
+                NotifyPropertyChanged(nameof(CurrentServiceType));
+            }
+        }
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowInvalidOperation(string message)
+        {
+            throw new InvalidOperationException(message);
+        }
 
         #region INotifyPropertyChanged メソッド
         /// <inheritdoc/>
