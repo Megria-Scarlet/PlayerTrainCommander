@@ -54,6 +54,10 @@ namespace PTC.Core
         /// </summary>
         protected uint passengers;
         /// <summary>
+        /// 現在の進行方向に対する速度 (km/h) 。
+        /// </summary>
+        protected double speed;
+        /// <summary>
         /// 同期処理に使用する <see cref="System.Threading.SpinLock"/> 構造体。
         /// </summary>
         protected System.Threading.SpinLock spinLock;
@@ -182,6 +186,31 @@ namespace PTC.Core
                 }
             }
         }
+        /// <summary>
+        /// 現在の進行方向に対する速度 (km/h) を取得します。
+        /// </summary>
+        /// <returns>
+        /// 現在の進行方向に対する速度 (km/h) を示す倍精度浮動小数点。
+        /// </returns>
+        /// <remarks>
+        /// このメソッドはスレッドセーフです。
+        /// </remarks>
+        public double Speed
+        {
+            get
+            {
+                bool gotLock = false;
+                try
+                {
+                    spinLock.Enter(ref gotLock);
+                    return speed;
+                }
+                finally
+                {
+                    if (gotLock) spinLock.Exit();
+                }
+            }
+        }
 
         #endregion
 
@@ -215,7 +244,8 @@ namespace PTC.Core
         /// 乗客数を設定します。
         /// </summary>
         /// <remarks>
-        /// <see cref="State"/> が <see cref="TrainState.BoardingAndAlighting"/> の時のみ設定できます。
+        /// <see cref="State"/> が <see cref="TrainState.BoardingAndAlighting"/> の時のみ設定できます。<br></br>
+        /// このメソッドはスレッドセーフです。
         /// </remarks>
         /// <param name="passengers">乗客数。</param>
         /// <exception cref="InvalidOperationException"/>
@@ -250,7 +280,8 @@ namespace PTC.Core
         /// </summary>
         /// <remarks>
         /// <see cref="State"/> が <see cref="TrainState.Waiting"/> または <see cref="TrainState.BoardingAndAlighting"/> の時 (<paramref name="serviceType"/>
-        /// が <see langword="null"/> の場合は <see cref="TrainState.Undefined"/>, <see cref="TrainState.Detention"/> を含む) のみ設定できます。
+        /// が <see langword="null"/> の場合は <see cref="TrainState.Undefined"/>, <see cref="TrainState.Detention"/> を含む) のみ設定できます。<br></br>
+        /// このメソッドはスレッドセーフです。
         /// </remarks>
         /// <param name="serviceType">新しい列車種別。</param>
         /// <exception cref="InvalidOperationException"/>
@@ -288,6 +319,41 @@ namespace PTC.Core
             if (isChenged)
             {
                 NotifyPropertyChanged(nameof(CurrentServiceType));
+            }
+        }
+        /// <summary>
+        /// 現在の進行方向に対する速度 (km/h) を即時に変更します。
+        /// </summary>
+        /// <remarks>
+        /// <see cref="State"/> が <see cref="TrainState.Undefined"/> または <see cref="TrainState.Detention"/> 以外の時のみ設定できます。<br></br>
+        /// このメソッドはスレッドセーフです。
+        /// </remarks>
+        /// <param name="speed">新しい速度 (km/h) 。</param>
+        /// <exception cref="InvalidOperationException"/>
+        public void SetSpeed(double speed)
+        {
+            bool isChenged = false;
+            bool gotLock = false;
+            try
+            {
+                spinLock.Enter(ref gotLock);
+                if (this.state is TrainState.Detention or TrainState.Undefined)
+                {
+                    ThrowInvalidOperation("The value of \"State\" is \"TrainState.Undefined\" or \"TrainState.Detention\".");
+                }
+                if (!this.speed.Equals(speed))
+                {
+                    isChenged = true;
+                    this.speed = speed;
+                }
+            }
+            finally
+            {
+                if (gotLock) spinLock.Exit();
+            }
+            if (isChenged)
+            {
+                NotifyPropertyChanged(nameof(Speed));
             }
         }
         [MethodImpl(MethodImplOptions.NoInlining)]
