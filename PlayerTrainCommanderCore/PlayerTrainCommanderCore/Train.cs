@@ -19,6 +19,10 @@ namespace PTC.Core
         /// </summary>
         protected TrainState state;
         /// <summary>
+        /// 列車情報。
+        /// </summary>
+        protected TrainData trainData;
+        /// <summary>
         /// 同期処理に使用する <see cref="System.Threading.SpinLock"/> 構造体。
         /// </summary>
         protected System.Threading.SpinLock spinLock;
@@ -50,15 +54,41 @@ namespace PTC.Core
                 }
             }
         }
+        /// <summary>
+        /// 列車の編成情報を示す <see cref="TrainData"/> 型のオブジェクトを取得します。
+        /// </summary>
+        /// <returns>
+        /// 列車の編成情報を示す <see cref="TrainData"/> 型のオブジェクト。
+        /// </returns>
+        /// <remarks>
+        /// このメソッドはスレッドセーフではありません。
+        /// </remarks>
+        public TrainData Data
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                return trainData;
+            }
+        }
 
         #endregion
 
         /// <summary>
         /// 既定の値を使用して、新しい <see cref="Train"/> 型のオブジェクトを作成します。
         /// </summary>
-        public Train()
+        public Train() : this(null!)
         {
-            state = TrainState.Undefined;
+
+        }
+        /// <summary>
+        /// 列車情報を指定して、新しい <see cref="Train"/> 型のオブジェクトを作成します。
+        /// </summary>
+        /// <param name="trainData">列車情報を示す <see cref="TrainData"/> 型のオブジェクト。</param>
+        public Train(TrainData trainData)
+        {
+            this.state = TrainState.Undefined;
+            this.trainData = trainData;
             spinLock = new();
         }
 
