@@ -211,6 +211,31 @@ namespace PTC.Core
                 }
             }
         }
+        /// <summary>
+        /// 現在の閉そくを取得します。
+        /// </summary>
+        /// <returns>
+        /// 現在の閉そくを示す <see cref="Track"/> 型のオブジェクト。
+        /// </returns>
+        /// <remarks>
+        /// このメソッドはスレッドセーフです。
+        /// </remarks>
+        public Track CurrentTrack
+        {
+            get
+            {
+                bool gotLock = false;
+                try
+                {
+                    spinLock.Enter(ref gotLock);
+                    return currentTrack;
+                }
+                finally
+                {
+                    if (gotLock) spinLock.Exit();
+                }
+            }
+        }
 
         #endregion
 
@@ -356,6 +381,42 @@ namespace PTC.Core
                 NotifyPropertyChanged(nameof(Speed));
             }
         }
+        /// <summary>
+        /// 現在の閉そくを即時に変更します。
+        /// </summary>
+        /// <remarks>
+        /// <see cref="State"/> が <see cref="TrainState.Undefined"/> または <see cref="TrainState.Detention"/> の時のみ設定できます。<br></br>
+        /// このメソッドはスレッドセーフです。
+        /// </remarks>
+        /// <param name="track">設定する閉そく。</param>
+        /// <exception cref="InvalidOperationException"/>
+        public void SetTrack(Track track)
+        {
+            bool isChenged = false;
+            bool gotLock = false;
+            try
+            {
+                spinLock.Enter(ref gotLock);
+                if (this.state is not (TrainState.Detention or TrainState.Undefined))
+                {
+                    ThrowInvalidOperation("The value of \"State\" is not \"TrainState.Undefined\" or \"TrainState.Detention\".");
+                }
+                if (!EqualityComparer<Track>.Default.Equals(track, this.currentTrack))
+                {
+                    isChenged = true;
+                    this.currentTrack = track;
+                }
+            }
+            finally
+            {
+                if (gotLock) spinLock.Exit();
+            }
+            if (isChenged)
+            {
+                NotifyPropertyChanged(nameof(CurrentTrack));
+            }
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowInvalidOperation(string message)
         {

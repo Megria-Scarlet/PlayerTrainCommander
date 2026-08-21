@@ -626,6 +626,17 @@
             このメソッドはスレッドセーフです。
             </remarks>
         </member>
+        <member name="P:PTC.Core.Train.CurrentTrack">
+            <summary>
+            現在の閉そくを取得します。
+            </summary>
+            <returns>
+            現在の閉そくを示す <see cref="T:PTC.Core.Track"/> 型のオブジェクト。
+            </returns>
+            <remarks>
+            このメソッドはスレッドセーフです。
+            </remarks>
+        </member>
         <member name="M:PTC.Core.Train.#ctor">
             <summary>
             既定の値を使用して、新しい <see cref="T:PTC.Core.Train"/> 型のオブジェクトを作成します。
@@ -671,6 +682,17 @@
             このメソッドはスレッドセーフです。
             </remarks>
             <param name="speed">新しい速度 (km/h) 。</param>
+            <exception cref="T:System.InvalidOperationException"/>
+        </member>
+        <member name="M:PTC.Core.Train.SetTrack(PTC.Core.Track)">
+            <summary>
+            現在の閉そくを即時に変更します。
+            </summary>
+            <remarks>
+            <see cref="P:PTC.Core.Train.State"/> が <see cref="F:PTC.Core.TrainState.Undefined"/> または <see cref="F:PTC.Core.TrainState.Detention"/> の時のみ設定できます。<br></br>
+            このメソッドはスレッドセーフです。
+            </remarks>
+            <param name="track">設定する閉そく。</param>
             <exception cref="T:System.InvalidOperationException"/>
         </member>
         <member name="E:PTC.Core.Train.PropertyChanged">
